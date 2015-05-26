@@ -26,7 +26,7 @@ class SolitaireMancala:
         houses are number in ascending order from right to left
         """
         self.configuration = configuration
-        print "config - " + str(self.configuration)
+        # print "config - " + str(self.configuration)
     
     def __str__(self):
         """
@@ -38,10 +38,10 @@ class SolitaireMancala:
         """
         Return the number of seeds in given house on board
         """
-        print
-        print "inside get_num_seeds..."
-        print "house_num - ", house_num
-        print "seeds - ", self.configuration[house_num]
+        # print
+        # print "inside get_num_seeds..."
+        # print "house_num - ", house_num
+        # print "seeds - ", self.configuration[house_num]
         
         return self.configuration[house_num]
 
@@ -49,15 +49,15 @@ class SolitaireMancala:
         """
         Check to see if all houses but house zero are empty
         """
-        print "inside is_game_won..."
+        # print "inside is_game_won..."
         
         for i in range(len(self.configuration)-1):
             if self.configuration[i+1] != 0:
-                print str(self.configuration)
-                print "game lost!"
+                # print str(self.configuration)
+                # print "game lost!"
                 return False
             
-        print "game won!"
+        # print "game won!"
         return True
     
     
@@ -65,15 +65,15 @@ class SolitaireMancala:
         """
         Check whether a given move is legal
         """
-        print
-        print "inside is_legal_move..."
-        print "house_num - ", house_num,
+        # print
+        # print "inside is_legal_move..."
+        # print "house_num - ", house_num,
         
         if house_num == 0 or self.configuration[house_num] != house_num:
-            print False
+            # print False
             return False
     
-        print True
+        # print True
         return True
 
     
@@ -82,24 +82,24 @@ class SolitaireMancala:
         Move all of the stones from house to lower/left houses
         Last seed must be played in the store (house zero)
         """
-        print
-        print "inside apply_move..."
-        print "move chosen - ", house_num
+        # print
+        # print "inside apply_move..."
+        # print "move chosen - ", house_num
         
-        print "before move - "
-        print self.configuration
+        # print "before move - "
+        # print self.configuration
         
         self.configuration[house_num] = 0
         
-        print self.configuration[house_num]
+        # print self.configuration[house_num]
         
-        print range(house_num, 0, -1)
+        # print range(house_num, 0, -1)
         for i in range(house_num-1, 0, -1):
             self.configuration[i] = self.configuration[i] + 1
         
         self.configuration[0] = self.configuration[0] + 1
-        print "after move - "
-        print self.configuration
+        # print "after move - "
+        # print self.configuration
             
     def choose_move(self):
         """
@@ -108,8 +108,8 @@ class SolitaireMancala:
         Note that using a longer legal move would make smaller illegal
         If no legal move, return house zero
         """
-        print
-        print "inside choose_move..."
+        # print
+        # print "inside choose_move..."
         legal_moves = []
         
         for i in range(len(self.configuration)):
@@ -118,8 +118,8 @@ class SolitaireMancala:
                 if self.is_legal_move(i):
                     legal_moves.append(i)
                     
-        print "legal_moves - ", legal_moves
-        print "move chosen - ", min(legal_moves)
+        # print "legal_moves - ", legal_moves
+        # print "move chosen - ", min(legal_moves)
         return min(legal_moves)
     
     def plan_moves(self):
@@ -129,14 +129,16 @@ class SolitaireMancala:
         when given a choice of legal moves
         Not used in GUI version, only for machine testing
         """
-        print
-        print "inside plan_moves..."
+        # print
+        # print "inside plan_moves..."
+
+        print "current configuration - ", self.configuration
         ideal_moves = []
         
         while(not self.is_game_won()):
             current_move = self.choose_move()
-            print
-            print "current_move - ", current_move
+            # print
+            # print "current_move - ", current_move
             self.apply_move(current_move)
             ideal_moves.append(current_move)
 
@@ -152,18 +154,17 @@ def test_mancala():
     """
     
     my_game = SolitaireMancala()
-    print "Testing init - Computed:", my_game, "Expected: [0]"
+    # print "Testing init - Computed:", my_game, "Expected: [0]"
     
     config1 = [0, 0, 1, 1, 3, 5, 0]    
     my_game.set_board(config1)   
     
-    print "Testing set_board - Computed:", str(my_game), "Expected:", str([0, 5, 3, 1, 1, 0, 0])
-    print "Testing get_num_seeds - Computed:", my_game.get_num_seeds(1), "Expected:", config1[1]
-#    print "Testing get_num_seeds - Computed:", my_game.get_num_seeds(3), "Expected:", config1[3]
-#    print "Testing get_num_seeds - Computed:", my_game.get_num_seeds(5), "Expected:", config1[5]
+#    # print "Testing set_board - Computed:", str(my_game), "Expected:", str([0, 5, 3, 1, 1, 0, 0])
+#    # print "Testing get_num_seeds - Computed:", my_game.get_num_seeds(1), "Expected:", config1[1]
+#    # print "Testing get_num_seeds - Computed:", my_game.get_num_seeds(3), "Expected:", config1[3]
+#    # print "Testing get_num_seeds - Computed:", my_game.get_num_seeds(5), "Expected:", config1[5]
     print
     print "playing the game....."
-    
     my_game.plan_moves()
     my_game.is_game_won()
     
