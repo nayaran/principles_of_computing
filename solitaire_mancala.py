@@ -16,7 +16,8 @@ class SolitaireMancala:
         """
         Create Mancala game with empty store and no houses
         """
-        pass
+        self.configuration = [0]
+
     
     def set_board(self, configuration):
         """
@@ -24,30 +25,39 @@ class SolitaireMancala:
         house zero corresponds to the store and is on right
         houses are number in ascending order from right to left
         """
-        pass
+        self.configuration = configuration
+        print "config - " + str(self.configuration)
     
     def __str__(self):
         """
         Return string representation for Mancala board
         """
-        return ""
+        return str(self.configuration[::-1])
     
     def get_num_seeds(self, house_num):
         """
         Return the number of seeds in given house on board
         """
-        return 0
+         return self.configuration[house_num]
 
     def is_game_won(self):
         """
         Check to see if all houses but house zero are empty
         """
-        return True
+          for i in range(len(self.configuration)-1):
+            if self.configuration[i+1] != 0:
+                  return False
+            
+         return True
+    
     
     def is_legal_move(self, house_num):
         """
         Check whether a given move is legal
         """
+        if house_num == 0 or self.configuration[house_num] != house_num:
+             return False
+    
         return True
 
     
@@ -56,8 +66,11 @@ class SolitaireMancala:
         Move all of the stones from house to lower/left houses
         Last seed must be played in the store (house zero)
         """
-        pass
-
+         self.configuration[house_num] = 0
+                
+        for i in range(house_num, 0, -1):
+            self.configuration[house_num] += 1
+            
     def choose_move(self):
         """
         Return the house for the next shortest legal move
@@ -65,13 +78,20 @@ class SolitaireMancala:
         Note that using a longer legal move would make smaller illegal
         If no legal move, return house zero
         """
-        return 0
+        legal_moves = []
+        
+        for i in range(len(self.configuration)):
+            
+            if i != 0:
+                if self.is_legal_move(i):
+                    legal_moves.append(i)
+         return min(legal_moves)
     
     def plan_moves(self):
         """
         Return a sequence (list) of legal moves based on the following heuristic: 
-		After each move, move the seeds in the house closest to the store 
-		when given a choice of legal moves
+        After each move, move the seeds in the house closest to the store 
+        when given a choice of legal moves
         Not used in GUI version, only for machine testing
         """
         return []
@@ -97,10 +117,10 @@ def test_mancala():
 
     # add more tests here
     
-test_mancala()
+#test_mancala()
 
 
 # Import GUI code once you feel your code is correct
-# import poc_mancala_gui
-# poc_mancala_gui.run_gui(SolitaireMancala())
+import poc_mancala_gui
+poc_mancala_gui.run_gui(SolitaireMancala())
 
