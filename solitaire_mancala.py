@@ -38,26 +38,42 @@ class SolitaireMancala:
         """
         Return the number of seeds in given house on board
         """
-         return self.configuration[house_num]
+        print
+        print "inside get_num_seeds..."
+        print "house_num - ", house_num
+        print "seeds - ", self.configuration[house_num]
+        
+        return self.configuration[house_num]
 
     def is_game_won(self):
         """
         Check to see if all houses but house zero are empty
         """
-          for i in range(len(self.configuration)-1):
+        print "inside is_game_won..."
+        
+        for i in range(len(self.configuration)-1):
             if self.configuration[i+1] != 0:
-                  return False
+                print str(self.configuration)
+                print "game lost!"
+                return False
             
-         return True
+        print "game won!"
+        return True
     
     
     def is_legal_move(self, house_num):
         """
         Check whether a given move is legal
         """
+        print
+        print "inside is_legal_move..."
+        print "house_num - ", house_num
+        
         if house_num == 0 or self.configuration[house_num] != house_num:
-             return False
+            print False
+            return False
     
+        print True
         return True
 
     
@@ -66,10 +82,14 @@ class SolitaireMancala:
         Move all of the stones from house to lower/left houses
         Last seed must be played in the store (house zero)
         """
-         self.configuration[house_num] = 0
+        print
+        print "inside apply_move..."
+        print self.configuration
+        self.configuration[house_num] = 0
                 
         for i in range(house_num, 0, -1):
             self.configuration[house_num] += 1
+        print self.configuration
             
     def choose_move(self):
         """
@@ -78,6 +98,8 @@ class SolitaireMancala:
         Note that using a longer legal move would make smaller illegal
         If no legal move, return house zero
         """
+        print
+        print "inside choose_move..."
         legal_moves = []
         
         for i in range(len(self.configuration)):
@@ -85,7 +107,9 @@ class SolitaireMancala:
             if i != 0:
                 if self.is_legal_move(i):
                     legal_moves.append(i)
-         return min(legal_moves)
+        print "legal_moves - ", legal_moves
+        print "move chosen - ", min(legal_moves)
+        return min(legal_moves)
     
     def plan_moves(self):
         """
