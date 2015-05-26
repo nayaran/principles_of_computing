@@ -67,7 +67,7 @@ class SolitaireMancala:
         """
         print
         print "inside is_legal_move..."
-        print "house_num - ", house_num
+        print "house_num - ", house_num,
         
         if house_num == 0 or self.configuration[house_num] != house_num:
             print False
@@ -84,11 +84,21 @@ class SolitaireMancala:
         """
         print
         print "inside apply_move..."
+        print "move chosen - ", house_num
+        
+        print "before move - "
         print self.configuration
+        
         self.configuration[house_num] = 0
-                
-        for i in range(house_num, 0, -1):
-            self.configuration[house_num] += 1
+        
+        print self.configuration[house_num]
+        
+        print range(house_num, 0, -1)
+        for i in range(house_num-1, 0, -1):
+            self.configuration[i] = self.configuration[i] + 1
+        
+        self.configuration[0] = self.configuration[0] + 1
+        print "after move - "
         print self.configuration
             
     def choose_move(self):
@@ -107,6 +117,7 @@ class SolitaireMancala:
             if i != 0:
                 if self.is_legal_move(i):
                     legal_moves.append(i)
+                    
         print "legal_moves - ", legal_moves
         print "move chosen - ", min(legal_moves)
         return min(legal_moves)
@@ -118,7 +129,19 @@ class SolitaireMancala:
         when given a choice of legal moves
         Not used in GUI version, only for machine testing
         """
-        return []
+        print
+        print "inside plan_moves..."
+        ideal_moves = []
+        
+        while(not self.is_game_won()):
+            current_move = self.choose_move()
+            print
+            print "current_move - ", current_move
+            self.apply_move(current_move)
+            ideal_moves.append(current_move)
+
+        print "ideal moves - ", ideal_moves
+        return ideal_moves
  
 
 # Create tests to check the correctness of your code
@@ -136,15 +159,20 @@ def test_mancala():
     
     print "Testing set_board - Computed:", str(my_game), "Expected:", str([0, 5, 3, 1, 1, 0, 0])
     print "Testing get_num_seeds - Computed:", my_game.get_num_seeds(1), "Expected:", config1[1]
-    print "Testing get_num_seeds - Computed:", my_game.get_num_seeds(3), "Expected:", config1[3]
-    print "Testing get_num_seeds - Computed:", my_game.get_num_seeds(5), "Expected:", config1[5]
-
+#    print "Testing get_num_seeds - Computed:", my_game.get_num_seeds(3), "Expected:", config1[3]
+#    print "Testing get_num_seeds - Computed:", my_game.get_num_seeds(5), "Expected:", config1[5]
+    print
+    print "playing the game....."
+    
+    my_game.plan_moves()
+    my_game.is_game_won()
+    
     # add more tests here
     
-#test_mancala()
+test_mancala()
 
 
 # Import GUI code once you feel your code is correct
-import poc_mancala_gui
-poc_mancala_gui.run_gui(SolitaireMancala())
+#import poc_mancala_gui
+#poc_mancala_gui.run_gui(SolitaireMancala())
 
