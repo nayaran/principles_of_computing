@@ -88,6 +88,11 @@ class SolitaireMancala:
         
         # print "before move - "
         # print self.configuration
+       
+        if not self.is_legal_move(house_num):
+            return
+        if self.configuration[house_num] == 0:
+            return
         
         self.configuration[house_num] = 0
         
@@ -170,10 +175,10 @@ def test_mancala():
     
     # add more tests here
     
-test_mancala()
+#test_mancala()
 
 
 # Import GUI code once you feel your code is correct
-#import poc_mancala_gui
-#poc_mancala_gui.run_gui(SolitaireMancala())
+import poc_mancala_gui
+poc_mancala_gui.run_gui(SolitaireMancala())
 
