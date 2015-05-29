@@ -9,6 +9,8 @@ def merge(line):
 
     # creates a copy of the line
 
+    print
+    print 'input - ', line
     row = list(line)
     result = [0] * len(line)
 
@@ -17,6 +19,8 @@ def merge(line):
 
     # flag to make sure that we merge a tile only once
     canMerge = True
+
+    print
 
     # iterate over the given row and
     # if found non_zero value,
@@ -28,6 +32,9 @@ def merge(line):
         if row[sourceIndex]:
 
             # if non_zero value found
+            print 'sourceIndex- ', sourceIndex, row
+            print 'destIndex- ', destIndex, result
+
             if result[destIndex-1] == row[sourceIndex] and canMerge:
                 # merge can be done
                 # hence merge
@@ -46,14 +53,16 @@ def merge(line):
                 # enable merging
                 canMerge = True
 
+        print result
+        print
 
     return result
 
 
 
-print "[2, 0, 2, 4] should return [4, 4, 0, 0], returns - ", merge([2, 0, 2, 4])
-print "[0, 0, 2, 2] should return [4, 0, 0, 0], returns - ", merge([0, 0, 2, 2])
-print "[2, 2, 0, 0] should return [4, 0, 0, 0], returns - ", merge([2, 2, 0, 0])
-print "[2, 2, 2, 2, 2] should return [4, 4, 2, 0, 0], returns - ", merge([2, 2, 2, 2, 2])
-print "[8, 16, 16, 8] should return [8, 32, 8, 0], returns - ", merge([8, 16, 16, 8])
+#print "[2, 0, 2, 4] should return [4, 4, 0, 0], returns - ", merge([2, 0, 2, 4])
+#print "[0, 0, 2, 2] should return [4, 0, 0, 0], returns - ", merge([0, 0, 2, 2])
+#print "[2, 2, 0, 0] should return [4, 0, 0, 0], returns - ", merge([2, 2, 0, 0])
+#print "[2, 2, 2, 2, 2] should return [4, 4, 2, 0, 0], returns - ", merge([2, 2, 2, 2, 2])
+#print "[8, 16, 16, 8] should return [8, 32, 8, 0], returns - ", merge([8, 16, 16, 8])
 print "[2, 0, 2, 4, 0, 4, 8, 8] should return [4, 8, 16, 0, 0, 0, 0, 0] returns - ", merge([2, 0, 2, 4, 0, 4, 8, 8])
