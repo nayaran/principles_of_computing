@@ -9,8 +9,8 @@ def merge(line):
 
     # creates a copy of the line
 
-    print
-    print 'input - ', line
+#   print
+#   print 'input - ', line
     row = list(line)
     result = [0] * len(line)
 
@@ -20,7 +20,7 @@ def merge(line):
     # flag to make sure that we merge a tile only once
     canMerge = True
 
-    print
+ #   print
 
     # iterate over the given row and
     # if found non_zero value,
@@ -32,8 +32,8 @@ def merge(line):
         if row[sourceIndex]:
 
             # if non_zero value found
-            print 'sourceIndex- ', sourceIndex, row
-            print 'destIndex- ', destIndex, result
+#           print 'sourceIndex- ', sourceIndex, row
+#           print 'destIndex- ', destIndex, result
 
             if result[destIndex-1] == row[sourceIndex] and canMerge:
                 # merge can be done
@@ -53,16 +53,51 @@ def merge(line):
                 # enable merging
                 canMerge = True
 
-        print result
-        print
+#        print result
+#        print
 
     return result
 
 
 
-#print "[2, 0, 2, 4] should return [4, 4, 0, 0], returns - ", merge([2, 0, 2, 4])
-#print "[0, 0, 2, 2] should return [4, 0, 0, 0], returns - ", merge([0, 0, 2, 2])
-#print "[2, 2, 0, 0] should return [4, 0, 0, 0], returns - ", merge([2, 2, 0, 0])
-#print "[2, 2, 2, 2, 2] should return [4, 4, 2, 0, 0], returns - ", merge([2, 2, 2, 2, 2])
-#print "[8, 16, 16, 8] should return [8, 32, 8, 0], returns - ", merge([8, 16, 16, 8])
-print "[2, 0, 2, 4, 0, 4, 8, 8] should return [4, 8, 16, 0, 0, 0, 0, 0] returns - ", merge([2, 0, 2, 4, 0, 4, 8, 8])
+def test(mergeMethod):
+    """
+    Function that tests the merge method in 2048.
+    """
+    print "Test Case #1-"
+    print "Input-\t[0, 0, 2, 2]"
+    print "Expects-[4, 0, 0, 0]"
+    print "Got-\t", mergeMethod([0, 0, 2, 2])
+    print
+
+    print "Test Case #2-"
+    print "Input-\t[2, 0, 2, 4]"
+    print "Expects-[4, 4, 0, 0]"
+    print "Got-\t", mergeMethod([2, 0, 2, 4])
+    print
+
+    print "Test Case #3-"
+    print "Input-\t[2, 2, 0, 0]"
+    print "Expects-[4, 0, 0, 0]"
+    print "Got-\t", mergeMethod([2, 2, 0, 0])
+    print
+
+    print "Test Case #4-"
+    print "Input-\t[2, 2, 2, 2, 2]"
+    print "Expects-[4, 4, 2, 0, 0]"
+    print "Got-\t", mergeMethod([2, 2, 2, 2, 2])
+    print
+
+    print "Test Case #5-"
+    print "Input-\t[8, 16, 16, 8]"
+    print "Expects-[8, 32, 8, 0]"
+    print "Got-\t", mergeMethod([8, 16, 16, 8])
+    print
+
+    print "Test Case #6-"
+    print "Input-\t[2, 0, 2, 4, 0, 4, 8, 8]"
+    print "Expects-[4, 8, 16, 0, 0, 0, 0, 0]"
+    print "Got-\t", mergeMethod([2, 0, 2, 4, 0, 4, 8, 8])
+    print
+
+test(merge)
