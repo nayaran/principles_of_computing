@@ -77,7 +77,60 @@ class TwentyFortyEight:
         self.GRID_HEIGHT = grid_height
         self.GRID_WIDTH = grid_width
 
+        # initializes the dict to store the inital tiles
+        # for each direction
+        self.set_initial_tiles()
+
+        # resets the grid
         self.reset()
+
+    def set_initial_tiles(self):
+        """
+        For each direction, pre-computes a list of the indices
+        for the initial tiles in that direction
+        """
+        self.INITIAL_TILES = {}
+
+        tiles = []
+
+        # temp dictionary for fetching increment counters
+        # for each direction
+
+        TEMP_OFFSET = {
+
+            UP      : (0, 1),
+            DOWN    : (self.GRID_HEIGHT - 1, 1),
+            LEFT    : (1, 0),
+            RIGHT   : (1, self.GRID_WIDTH - 1)
+        }
+
+        # sets up the INITIAL_TILES for each direction
+
+        for direction in range(1,5):
+
+            # fetches the increment counters from
+            # TEMP_OFFSET dict
+            row_increment = TEMP_OFFSET[direction][0]
+            col_increment = TEMP_OFFSET[direction][1]
+
+            # direction is either UP or DOWN
+            if col_increment == 1:
+                for col in range(self.GRID_WIDTH):
+                    tiles.append((row_increment, col))
+
+
+            # direction is either LEFT or RIGHT
+            if row_increment == 1:
+                for row in range(self.GRID_HEIGHT):
+                    tiles.append((row, col_increment))
+
+
+            self.INITIAL_TILES[direction] = tiles
+
+            tiles = []
+        print 'INITIAL_TILES- '
+        print self.INITIAL_TILES
+        print
 
     def reset(self):
         """
@@ -115,7 +168,6 @@ class TwentyFortyEight:
 
         return board
 
-
     def get_grid_height(self):
         """
         Get the height of the board.
@@ -135,6 +187,68 @@ class TwentyFortyEight:
         Move all tiles in the given direction and add
         a new tile if any tiles moved.
         """
+
+        initial_tiles = self.INITIAL_TILES[direction]
+
+        print 'direction- ', direction
+        print 'initial_tiles- ', initial_tiles
+        print 'len(initial_tiles)- ', len(initial_tiles)
+
+        # setting up the no of steps to traverse
+        if direction == UP or direction == DOWN:
+            num_steps = self.GRID_HEIGHT
+        else:
+            num_steps = self.GRID_WIDTH
+
+
+        print 'num_steps- ', num_steps
+
+        print
+        changed = False
+        print 'changed- ', changed
+
+        for tile_index in range(len(initial_tiles)):
+
+            # form the list with the current initial_tile
+
+            start_cell = initial_tiles[tile_index]
+
+            print 'start_cell- ', start_cell
+
+
+            temp_list = []
+
+            x_increment = OFFSETS[direction][0]
+            y_increment = OFFSETS[direction][1]
+
+            for step in range(num_steps):
+                row = start_cell[0] + step * x_increment
+                col = start_cell[1] + step * y_increment
+
+                temp_list.append(self.get_tile(row, col))
+
+            print 'temp_list- ', temp_list
+
+            # merges the newly formed list
+
+            merged_list = merge(temp_list)
+            print 'merged_list- ', merged_list
+            print
+
+
+            # replaces the list with the merged list
+            for step in range(num_steps):
+                row = start_cell[0] + step * x_increment
+                col = start_cell[1] + step * y_increment
+
+                self.set_tile(row, col, merged_list[step])
+
+
+            if(merged_list != temp_list):
+                changed = True
+
+        if changed:
+            self.new_tile()
 
 
     def new_tile(self):
@@ -158,8 +272,6 @@ class TwentyFortyEight:
         # set the value of the tile
         self.set_tile(tile[0], tile[1],random.choice(rand_list))
 
-
-
     def set_tile(self, row, col, value):
         """
         Set the tile at position row, col to have the given value.
@@ -175,7 +287,10 @@ class TwentyFortyEight:
 
 def test():
 
-    new_game = TwentyFortyEight(4, 4)
+    new_game = TwentyFortyEight(4, 5)
+    print new_game
+
+    new_game.move(UP)
     print new_game
 
 
