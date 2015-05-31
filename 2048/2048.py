@@ -3,6 +3,7 @@ Clone of 2048 game.
 """
 
 import poc_2048_gui
+import random
 
 # Directions, DO NOT MODIFY
 UP = 1
@@ -69,37 +70,72 @@ class TwentyFortyEight:
     """
 
     def __init__(self, grid_height, grid_width):
-        # replace with your code
-        pass
+        """
+        Initializes the game.
+        Sets the height and width of the grid.
+        """
+        self.GRID_HEIGHT = grid_height
+        self.GRID_WIDTH = grid_width
+
+        self.reset()
 
     def reset(self):
         """
         Reset the game so the grid is empty except for two
         initial tiles.
         """
-        # replace with your code
-        pass
+
+        # initialize the grid with all zeroes
+        self.grid = [[ 0 for col in range(self.GRID_WIDTH)]
+                         for row in range(self.GRID_HEIGHT)]
+
+        # set two random tiles as 2
+        self.new_tile()
+        self.new_tile()
+
+
+        """
+        tile1 = self.getRandomTile()
+        self.grid[tile1[0]][tile1[1]] = 2
+
+        tile2 = self.getRandomTile()
+
+        # makes sure the two tiles are different
+        while(tile2[0] == tile1[0]):
+            tile2 = self.getRandomTile()
+
+        self.grid[tile2[0]][tile2[1]] = 2
+        """
+    def getRandomTile(self):
+        """
+        Returns the index of a valid random tile
+        """
+
+        x = random.randint(0, self.GRID_HEIGHT-1)
+        y = random.randint(0, self.GRID_WIDTH-1)
+
+        return [x, y]
 
     def __str__(self):
         """
         Return a string representation of the grid for debugging.
         """
-        # replace with your code
-        return ""
+        return str(self.grid)
+
 
     def get_grid_height(self):
         """
         Get the height of the board.
         """
         # replace with your code
-        return 0
+        return self.GRID_HEIGHT
 
     def get_grid_width(self):
         """
         Get the width of the board.
         """
         # replace with your code
-        return 0
+        return self.GRID_WIDTH
 
     def move(self, direction):
         """
@@ -115,22 +151,41 @@ class TwentyFortyEight:
         square.  The tile should be 2 90% of the time and
         4 10% of the time.
         """
-        # replace with your code
-        pass
+        # for setting the tile to be 2 90% of the time and
+        # 4 10% of the time
+
+        rand_list = [2 for count in range(10)]
+        rand_list.append(4)
+
+        tile = self.getRandomTile()
+
+        # makes sure we are chosing an empty random tile
+        while(self.get_tile(tile[0], tile[1]) != 0):
+            tile = self.getRandomTile()
+
+        # set the value of the tile
+        self.set_tile(tile[0], tile[1],random.choice(rand_list))
+
+
 
     def set_tile(self, row, col, value):
         """
         Set the tile at position row, col to have the given value.
         """
-        # replace with your code
-        pass
+        self.grid[row][col] = value
 
     def get_tile(self, row, col):
         """
         Return the value of the tile at position row, col.
         """
-        # replace with your code
-        return 0
+        return self.grid[row][col]
 
 
-poc_2048_gui.run_gui(TwentyFortyEight(4, 4))
+def test():
+
+    new_game = TwentyFortyEight(4, 4)
+    print new_game
+
+
+test()
+#poc_2048_gui.run_gui(TwentyFortyEight(4, 4))
