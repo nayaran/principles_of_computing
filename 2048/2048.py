@@ -93,19 +93,6 @@ class TwentyFortyEight:
         self.new_tile()
         self.new_tile()
 
-
-        """
-        tile1 = self.getRandomTile()
-        self.grid[tile1[0]][tile1[1]] = 2
-
-        tile2 = self.getRandomTile()
-
-        # makes sure the two tiles are different
-        while(tile2[0] == tile1[0]):
-            tile2 = self.getRandomTile()
-
-        self.grid[tile2[0]][tile2[1]] = 2
-        """
     def getRandomTile(self):
         """
         Returns the index of a valid random tile
@@ -120,7 +107,13 @@ class TwentyFortyEight:
         """
         Return a string representation of the grid for debugging.
         """
-        return str(self.grid)
+        board = ""
+        for row in range(self.GRID_HEIGHT):
+            for col in range(self.GRID_WIDTH):
+                board = board + str(self.grid[row][col]) + " "
+            board = board + "\n"
+
+        return board
 
 
     def get_grid_height(self):
@@ -142,8 +135,7 @@ class TwentyFortyEight:
         Move all tiles in the given direction and add
         a new tile if any tiles moved.
         """
-        # replace with your code
-        pass
+
 
     def new_tile(self):
         """
