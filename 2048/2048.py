@@ -74,8 +74,8 @@ class TwentyFortyEight:
         Initializes the game.
         Sets the height and width of the grid.
         """
-        self.GRID_HEIGHT = grid_height
-        self.GRID_WIDTH = grid_width
+        self._grid_height = grid_height
+        self._grid_width = grid_width
 
         # initializes the dict to store the inital tiles
         # for each direction
@@ -89,47 +89,47 @@ class TwentyFortyEight:
         For each direction, pre-computes a list of the indices
         for the initial tiles in that direction
         """
-        self.INITIAL_TILES = {}
+        self._initial_tiles_dict = {}
 
         tiles = []
 
         # temp dictionary for fetching increment counters
         # for each direction
 
-        TEMP_OFFSET = {
+        temp_offset_dict = {
 
             UP      : (0, 1),
-            DOWN    : (self.GRID_HEIGHT - 1, 1),
+            DOWN    : (self.get_grid_height() - 1, 1),
             LEFT    : (1, 0),
-            RIGHT   : (1, self.GRID_WIDTH - 1)
+            RIGHT   : (1, self.get_grid_width() - 1)
         }
 
-        # sets up the INITIAL_TILES for each direction
+        # sets up the initial_tiles_dict for each direction
 
         for direction in range(1,5):
 
             # fetches the increment counters from
-            # TEMP_OFFSET dict
-            row_increment = TEMP_OFFSET[direction][0]
-            col_increment = TEMP_OFFSET[direction][1]
+            # temp_offset_dict dict
+            row_increment = temp_offset_dict[direction][0]
+            col_increment = temp_offset_dict[direction][1]
 
             # direction is either UP or DOWN
             if col_increment == 1:
-                for col in range(self.GRID_WIDTH):
+                for col in range(self.get_grid_width()):
                     tiles.append((row_increment, col))
 
 
             # direction is either LEFT or RIGHT
             if row_increment == 1:
-                for row in range(self.GRID_HEIGHT):
+                for row in range(self.get_grid_height()):
                     tiles.append((row, col_increment))
 
 
-            self.INITIAL_TILES[direction] = tiles
+            self._initial_tiles_dict[direction] = tiles
 
             tiles = []
-        #print 'INITIAL_TILES- '
-        #print self.INITIAL_TILES
+        #print 'initial_tiles_dict- '
+        #printself._initial_tiles_dict
         #print
 
     def reset(self):
@@ -139,31 +139,31 @@ class TwentyFortyEight:
         """
 
         # initialize the grid with all zeroes
-        self.grid = [[ 0 for col in range(self.GRID_WIDTH)]
-                         for row in range(self.GRID_HEIGHT)]
+        self._grid = [[ 0 for dummy_col in range(self.get_grid_width())]
+                         for dummy_row in range(self.get_grid_height())]
 
         # set two random tiles as 2
         self.new_tile()
         self.new_tile()
 
-    def getRandomTile(self):
+    def get_random_tile(self):
         """
         Returns the index of a valid random tile
         """
 
-        x = random.randint(0, self.GRID_HEIGHT-1)
-        y = random.randint(0, self.GRID_WIDTH-1)
+        x_index = random.randint(0, self.get_grid_height()-1)
+        y_index = random.randint(0, self.get_grid_width()-1)
 
-        return [x, y]
+        return [x_index, y_index]
 
     def __str__(self):
         """
         Return a string representation of the grid for debugging.
         """
         board = ""
-        for row in range(self.GRID_HEIGHT):
-            for col in range(self.GRID_WIDTH):
-                board = board + str(self.grid[row][col]) + " "
+        for row in range(self.get_grid_height()):
+            for col in range(self.get_grid_width()):
+                board = board + str(self._grid[row][col]) + " "
             board = board + "\n"
 
         return board
@@ -173,14 +173,14 @@ class TwentyFortyEight:
         Get the height of the board.
         """
         # replace with your code
-        return self.GRID_HEIGHT
+        return self._grid_height
 
     def get_grid_width(self):
         """
         Get the width of the board.
         """
         # replace with your code
-        return self.GRID_WIDTH
+        return self._grid_width
 
     def move(self, direction):
         """
@@ -188,7 +188,7 @@ class TwentyFortyEight:
         a new tile if any tiles moved.
         """
 
-        initial_tiles = self.INITIAL_TILES[direction]
+        initial_tiles =self._initial_tiles_dict[direction]
 
         #print 'direction- ', direction
         #print 'initial_tiles- ', initial_tiles
@@ -196,9 +196,9 @@ class TwentyFortyEight:
 
         # setting up the no of steps to traverse
         if direction == UP or direction == DOWN:
-            num_steps = self.GRID_HEIGHT
+            num_steps = self.get_grid_height()
         else:
-            num_steps = self.GRID_WIDTH
+            num_steps = self.get_grid_width()
 
 
         #print 'num_steps- ', num_steps
@@ -260,14 +260,14 @@ class TwentyFortyEight:
         # for setting the tile to be 2 90% of the time and
         # 4 10% of the time
 
-        rand_list = [2 for count in range(10)]
+        rand_list = [2 for dummy_count in range(10)]
         rand_list.append(4)
 
-        tile = self.getRandomTile()
+        tile = self.get_random_tile()
 
         # makes sure we are chosing an empty random tile
         while(self.get_tile(tile[0], tile[1]) != 0):
-            tile = self.getRandomTile()
+            tile = self.get_random_tile()
 
         # set the value of the tile
         self.set_tile(tile[0], tile[1],random.choice(rand_list))
@@ -276,17 +276,19 @@ class TwentyFortyEight:
         """
         Set the tile at position row, col to have the given value.
         """
-        self.grid[row][col] = value
+        self._grid[row][col] = value
 
     def get_tile(self, row, col):
         """
         Return the value of the tile at position row, col.
         """
-        return self.grid[row][col]
+        return self._grid[row][col]
 
 
 def test():
-
+    """
+    tests the TwentyFortyEight implementation
+    """
     new_game = TwentyFortyEight(4, 5)
     print new_game
 
