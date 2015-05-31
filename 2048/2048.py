@@ -2,7 +2,7 @@
 Clone of 2048 game.
 """
 
-import poc_2048_gui
+#import poc_2048_gui
 import random
 
 # Directions, DO NOT MODIFY
@@ -128,9 +128,9 @@ class TwentyFortyEight:
             self.INITIAL_TILES[direction] = tiles
 
             tiles = []
-        print 'INITIAL_TILES- '
-        print self.INITIAL_TILES
-        print
+        #print 'INITIAL_TILES- '
+        #print self.INITIAL_TILES
+        #print
 
     def reset(self):
         """
@@ -190,9 +190,9 @@ class TwentyFortyEight:
 
         initial_tiles = self.INITIAL_TILES[direction]
 
-        print 'direction- ', direction
-        print 'initial_tiles- ', initial_tiles
-        print 'len(initial_tiles)- ', len(initial_tiles)
+        #print 'direction- ', direction
+        #print 'initial_tiles- ', initial_tiles
+        #print 'len(initial_tiles)- ', len(initial_tiles)
 
         # setting up the no of steps to traverse
         if direction == UP or direction == DOWN:
@@ -201,11 +201,11 @@ class TwentyFortyEight:
             num_steps = self.GRID_WIDTH
 
 
-        print 'num_steps- ', num_steps
+        #print 'num_steps- ', num_steps
 
-        print
+        #print
         changed = False
-        print 'changed- ', changed
+        #print 'changed- ', changed
 
         for tile_index in range(len(initial_tiles)):
 
@@ -213,7 +213,7 @@ class TwentyFortyEight:
 
             start_cell = initial_tiles[tile_index]
 
-            print 'start_cell- ', start_cell
+            #print 'start_cell- ', start_cell
 
 
             temp_list = []
@@ -227,13 +227,13 @@ class TwentyFortyEight:
 
                 temp_list.append(self.get_tile(row, col))
 
-            print 'temp_list- ', temp_list
+            #print 'temp_list- ', temp_list
 
             # merges the newly formed list
 
             merged_list = merge(temp_list)
-            print 'merged_list- ', merged_list
-            print
+            #print 'merged_list- ', merged_list
+            #print
 
 
             # replaces the list with the merged list
