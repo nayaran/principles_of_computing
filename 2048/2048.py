@@ -284,6 +284,28 @@ class TwentyFortyEight:
         """
         return self._grid[row][col]
 
+    def is_game_won(self):
+        """
+        Returns if the game is won or not
+        by checking if the maximum element is 2048 or not
+        """
+
+        # calculate the maximum element
+        max_element = 0
+
+        for row in range(self.get_grid_height()):
+            for col in range(self.get_grid_width()):
+                if self.get_tile(row, col) > max_element:
+                    max_element =  self.get_tile(row, col)
+
+        if max_element == 2048:
+            return True
+        else:
+            return False
+
+
+
+
 
 def test():
     """
@@ -295,6 +317,70 @@ def test():
     new_game.move(UP)
     print new_game
 
+def play():
+    print
+    print "2048!"
+    print "====="
 
-test()
+    raw_input("Press any key to start a new game!")
+    print
+    print "Enter the board size."
+    height, width = raw_input("format : height[space]width- ").split()
+
+    new_game = TwentyFortyEight(int(height), int(width))
+    print
+    print "Directions-."
+    print "You would be asked to enter the direction with 'direction-> ' prompt."
+    print "Format would be-"
+    print "u for UP"
+    print "d for DOWN"
+    print "l for LEFT"
+    print "r for RIGHT"
+    print "Any other key to exit.."
+
+    print
+    raw_input("Press any key to start the adrenaline rush!")
+
+    dir = {
+            'u' : 1,
+            'd' : 2,
+            'l' : 3,
+            'r' : 4,
+    }
+
+    direction = 'u'
+    print
+    print "board"
+    print "------"
+    print new_game
+
+    while(True):
+        print
+        direction = raw_input("direction-> ")
+
+        try:
+            new_game.move(dir[direction])
+        except KeyError:
+            print
+            print "Good Bye!"
+            break
+
+        print
+        print "board"
+        print "------"
+        print new_game
+
+        if new_game.is_game_won():
+            print
+            print "WOW! You have won the game! Contratulations!"
+            break
+
+    print
+    print "Thanks for stopping by. Bye!"
+
+
+
+play()
+
+#test()
 #poc_2048_gui.run_gui(TwentyFortyEight(4, 4))
