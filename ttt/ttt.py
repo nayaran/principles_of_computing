@@ -3,7 +3,7 @@ Monte Carlo Tic-Tac-Toe Player
 """
 
 import random
-#import poc_ttt_gui
+import poc_ttt_gui
 #import user40_xwPsYGoWjO_5 as provided
 import poc_ttt_provided as provided
 
@@ -22,8 +22,6 @@ def get_random_move(board):
     This function takes a current board and returns a random move
     for the player
     """
-    # Get the dimension
-    dim = board.get_dim()
 
     # Get the list of empty cells
     empty_cells = board.get_empty_squares()
@@ -135,9 +133,6 @@ def get_best_move(board, scores):
     print 'score_board - '
     print_score_board(scores, board)
 
-    # Get the dimension
-    dim = board.get_dim()
-
     # Get the list of empty cells
     empty_cells = board.get_empty_squares()
 
@@ -225,9 +220,12 @@ def mc_move(board, player, trials):
 
 
 def test():
+    """
+    A simple sanity test for the game
+    """
+
     dim = 3
     board = provided.TTTBoard(dim, False)
-    curplayer = provided.PLAYERX
 
     print 'new board - '
     print board
@@ -259,5 +257,5 @@ def test():
 # you prefer.  Both should be commented out when you submit
 # for testing to save time.
 
-provided.play_game(mc_move, NTRIALS, False)
-#poc_ttt_gui.run_gui(3, provided.PLAYERX, mc_move, NTRIALS, False)
+#provided.play_game(mc_move, NTRIALS, False)
+poc_ttt_gui.run_gui(3, provided.PLAYERX, mc_move, NTRIALS, False)
