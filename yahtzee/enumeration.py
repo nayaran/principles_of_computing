@@ -49,10 +49,33 @@ def gen_sorted_sequences(outcomes, length):
     """
     Function that creates all sorted sequences via gen_all_sequences
     """
-    all_sequences = gen_all_sequences(outcomes, length)
+    #all_sequences = gen_all_sequences(outcomes, length)
 
-    sorted_sequences = [tuple(sorted(sequence)) for sequence in all_sequences]
-    return set(sorted_sequences)
+    #sorted_sequences = [tuple(sorted(sequence)) for sequence in all_sequences]
+    #return set(sorted_sequences)
+
+
+    ans = set([()])
+
+    for dummy_index in range(length):
+
+        temp = set()
+
+        for seq in ans:
+
+            for item in outcomes:
+
+                new_seq = list(seq)
+                new_seq.append(item)
+                new_seq = sorted(new_seq)
+
+                temp.add(tuple(new_seq))
+
+        ans = temp
+
+    return ans
+
+
 
 
 
