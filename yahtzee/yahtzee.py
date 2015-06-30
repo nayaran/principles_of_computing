@@ -38,22 +38,11 @@ def gen_hold_helper(outcomes, length):
         for seq in ans:
             for item in outcomes:
                 new_seq = list(seq)
-                # First verify that the item is not already taken
-                # and then add to the sequence
-                for temp_item in outcomes:
-                    if temp_item != item:
-                        if temp_item not in new_seq:
-                            to_add = True
-                        else:
-                            to_add = False
-                            break
-                if to_add:
-                    new_seq.append(item)
-                    # To make sure we are generating distinct combinations,
-                    # exploit the no-duplicates-allowed property of the set,
-                    # by sorting the sequence before adding it to the ans
+                new_seq.append(item)
 
-                    #if new_seq.count(item) <= outcomes.count(item):
+                # Make sure that an item is not repeated more than
+                # the no of times it actually appears in the hand
+                if new_seq.count(item) <= outcomes.count(item):
                     temp.add(tuple(sorted(new_seq)))
         ans = temp
 
@@ -164,28 +153,15 @@ def gen_all_holds(hand):
 
 
     for dummy_index in range(length+1):
-        #current_hold = gen_all_sequences(hand, dummy_index)
         current_hold = gen_hold_helper(hand, dummy_index)
-
         for seq in current_hold:
             possible_holds.add(seq)
 
-
-    ans = set([()])
-    temp2 = []
-
-    for seq in possible_holds:
-        if len(seq) > 0:
-            if seq.count(seq[0]) == hand.count(seq[0]):
-                temp2.append(seq)
-
-    ans = temp2
-
-    print 'total_holds- ', len(ans)
+    print 'total_holds- ', len(possible_holds)
     print 'holds- '
-    print ans
+    print possible_holds
 
-    return ans
+    return possible_holds
 
 def strategy(hand, num_die_sides):
 
