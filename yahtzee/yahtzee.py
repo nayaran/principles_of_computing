@@ -4,8 +4,8 @@ Simplifications:  only allow discard and roll, only score against upper level
 """
 
 # Used to increase the timeout, if necessary
-import codeskulptor
-codeskulptor.set_timeout(20)
+#import codeskulptor
+#codeskulptor.set_timeout(20)
 
 def gen_all_sequences(outcomes, length):
     """
@@ -23,7 +23,41 @@ def gen_all_sequences(outcomes, length):
                 temp_set.add(tuple(new_sequence))
         answer_set = temp_set
     return answer_set
+def gen_hold_helper(outcomes, length):
+    """
+    Function that creates all permuations of the given length
+    from outcomes
+    """
 
+    ans = set([()])
+
+    for dummy_index in range(length):
+        temp = set()
+        to_add = False
+        for seq in ans:
+            for item in outcomes:
+                new_seq = list(seq)
+                # First verify that the item is not already taken
+                # and then add to the sequence
+                for temp_item in outcomes:
+                    if temp_item != item:
+                        if temp_item not in new_seq:
+                            to_add = True
+                        else:
+                            to_add = False
+                            break
+                if to_add:
+                    new_seq.append(item)
+                    # To make sure we are generating distinct combinations,
+                    # exploit the no-duplicates-allowed property of the set,
+                    # by sorting the sequence before adding it to the ans
+
+                    #if new_seq.count(item) <= outcomes.count(item):
+                    temp.add(tuple(sorted(new_seq)))
+        ans = temp
+
+
+    return ans
 def score(hand):
     """
     Compute the maximal score for a Yahtzee hand according to the
@@ -33,7 +67,7 @@ def score(hand):
 
     Returns an integer score
     """
-
+    print hand
     max_score = 0
     score_dict = {}
 
@@ -103,14 +137,29 @@ def gen_all_holds(hand):
     length = len(hand)
     possible_holds = set([()])
 
-    current_hold = set()
-    for dummy_index in range(length):
-        current_hold = gen_all_sequences(hand, dummy_index)
 
-    possible_holds = current_hold
-    print possible_holds
+    for dummy_index in range(length+1):
+        #current_hold = gen_all_sequences(hand, dummy_index)
+        current_hold = gen_hold_helper(hand, dummy_index)
 
-    return set([()])
+        for seq in current_hold:
+            possible_holds.add(seq)
+
+
+    ans = set([()])
+    temp2 = []
+
+    for seq in possible_holds:
+        if len(seq) > 0:
+            if seq.count(seq[0]) == hand.count(seq[0]):
+                temp2.append(seq)
+
+    ans = temp2
+
+    print 'total_holds- ', len(ans)
+    print ans
+
+    return ans
 
 def strategy(hand, num_die_sides):
     """
@@ -130,21 +179,26 @@ def run_example():
     Compute the dice to hold and expected score for an example hand
     """
     num_die_sides = 6
-    hand = (1, 1, 1, 5, 6)
+    hand = (1, 2, 1, 5, 6)
     print
-    print 'score(hand)'
+    print 'score', hand
     score(hand)
 
     print
 
-    held_dice = (1, 1, 1)
-    num_free_dice = 2
-    print 'expected_value(held_dice, num_die_sides, num_free_dice)'
+    held_dice = (1, 1)
+    num_free_dice = len(hand) - len(held_dice)
+    print 'expected_value(', held_dice,
+    print ',', num_die_sides,
+    print ',',num_free_dice,
+    print ')'
     expected_value(held_dice, num_die_sides, num_free_dice)
 
     print
-    print 'gen_all_holds((1, 2, 3))'
-    #gen_all_holds((1, 2, 3))
+    #hand = (1, 2, 1)
+
+    print 'gen_all_holds', hand, ''
+    gen_all_holds(hand)
 
 #    hand_score, hold = strategy(hand, num_die_sides)
 #    print "Best strategy for hand", hand, "is to hold", hold, "with expected score", hand_score
