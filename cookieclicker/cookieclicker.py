@@ -146,25 +146,25 @@ def simulate_clicker(build_info, duration, strategy):
     duration with the given strategy.  Returns a ClickerState
     object corresponding to the final state of the game.
     """
-    print 'inside simulate_clicker'
-    print 'duration - ', duration
+    #print 'inside simulate_clicker'
+    #print 'duration - ', duration
 
     build_info_clone = build_info.clone()
     state = ClickerState()
 
     while(state.get_time() <= duration):
-        print
-        print 'inside loop'
+        #print
+        #print 'inside loop'
         # Check the current time and break out of the loop if the duration
         # has been passed.
 
-        print 'current_time - ', state.get_time()
+        #print 'current_time - ', state.get_time()
         if state.get_time() > duration:
             break
 
-        print 'state before strategy function...'
-        print state
-        print 'calling strategy function'
+        #print 'state before strategy function...'
+        #print state
+        #print 'calling strategy function'
 
         # Call the strategy function with the appropriate arguments to
         # determine which item to purchase next. If the strategy function
@@ -175,7 +175,7 @@ def simulate_clicker(build_info, duration, strategy):
                                     state.get_history(), state.get_time(),
                                     build_info_clone)
 
-        print 'item_to_buy- ', item_to_buy
+        #print 'item_to_buy- ', item_to_buy
 
         # End the simulation if strategy returned None
         if item_to_buy == None:
@@ -184,13 +184,13 @@ def simulate_clicker(build_info, duration, strategy):
         # Get the cost of the item to purchase
         item_cost = build_info_clone.get_cost(item_to_buy)
 
-        print 'item_cost- ', item_cost
+        #print 'item_cost- ', item_cost
         # Determine how much time must elapse until it is possible to
         # purchase the item. If you would have to wait past the duration of
         # the simulation to purchase the item, you should end the simulation.
         time_to_wait = state.time_until(item_cost)
 
-        print 'time_to_wait- ', time_to_wait
+        #print 'time_to_wait- ', time_to_wait
 
         if state.get_time() + time_to_wait > duration:
             # Don't have enough time left. End the simulation
@@ -205,24 +205,24 @@ def simulate_clicker(build_info, duration, strategy):
 
         # Update the build information.
         build_info_clone.update_item(item_to_buy)
-        print 'state after purchase function...'
-        print state
+        #print 'state after purchase function...'
+        #print state
 
-    print 'outside loop'
+    #print 'outside loop'
 
     if state.get_time() <= duration:
         time_left = duration - state.get_time()
-        print 'still there is time left - ', time_left
-        print 'utilizing that time....',
+        #print 'still there is time left - ', time_left
+        #print 'utilizing that time....'
         state.current_cookies += state.get_cps() * time_left
         state.total_cookies += state.get_cps() * time_left
         state.current_time += time_left
 
-    print state.get_time()
-    print duration
+    #print state.get_time()
+    #print duration
 
-    print state.get_history()
-    print
+    #print state.get_history()
+    #print
     return state
 
 
