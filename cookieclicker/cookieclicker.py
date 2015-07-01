@@ -3,7 +3,7 @@ Cookie Clicker Simulator
 """
 
 import simpleplot
-
+import math
 # Used to increase the timeout, if necessary
 import codeskulptor
 codeskulptor.set_timeout(20)
@@ -11,7 +11,8 @@ codeskulptor.set_timeout(20)
 import poc_clicker_provided as provided
 
 # Constants
-SIM_TIME = 10000000000.0
+#SIM_TIME = 10000000000.0
+SIM_TIME = 100
 
 class ClickerState:
     """
@@ -19,13 +20,41 @@ class ClickerState:
     """
 
     def __init__(self):
-        pass
+        """
+        total_cookies- The total number of cookies produced throughout the entire game
+        current_cookies- The current number of cookies you have
+        current_time- The current time (in seconds) of the game
+        cps- The current CPS
+        history_list- History list would be a list of tuples of the form:
+                      (time, item, cost of item, total cookies)
+        """
+        self.total_cookies = 0.0
+        self.current_cookies = 0.0
+        self.current_time = 0.0
+        self.cps = 1.0
+        self.history_list = [()]
 
     def __str__(self):
         """
         Return human readable state
         """
-        return "not yet implemented"
+        statement = "\nCurrent State\n"
+        statement += "------------------------\n"
+
+        statement += "Time:\t\t " + str(self.get_time())
+        statement += "\nCurrent Cookies: " + str(self.get_cookies())
+        statement += "\nCPS:\t\t " + str(self.get_cps())
+        statement += "\nTotal Cookies:\t " + str(self.get_total_cookies())
+
+        return statement
+
+    def get_total_cookies(self):
+        """
+        Return total number of cookies
+
+        Should return a float
+        """
+        return self.total_cookies
 
     def get_cookies(self):
         """
@@ -34,7 +63,7 @@ class ClickerState:
 
         Should return a float
         """
-        return 0.0
+        return self.current_cookies
 
     def get_cps(self):
         """
@@ -42,7 +71,7 @@ class ClickerState:
 
         Should return a float
         """
-        return 0.0
+        return self.cps
 
     def get_time(self):
         """
@@ -50,7 +79,7 @@ class ClickerState:
 
         Should return a float
         """
-        return 0.0
+        return self.current_time
 
     def get_history(self):
         """
@@ -64,7 +93,7 @@ class ClickerState:
         Should return a copy of any internal data structures,
         so that they will not be modified outside of the class.
         """
-        return []
+        return list(self.history_list)
 
     def time_until(self, cookies):
         """
@@ -73,7 +102,13 @@ class ClickerState:
 
         Should return a float with no fractional part
         """
-        return 0.0
+
+        if self.get_cookies() >= cookies:
+            return self.get_cookies() - cookies
+        else:
+            return math.ceil((cookies - self.get_cookies())/self.get_cps())
+
+
 
     def wait(self, time):
         """
@@ -81,7 +116,13 @@ class ClickerState:
 
         Should do nothing if time <= 0.0
         """
-        pass
+        if time > 0.0:
+            self.current_cookies += self.get_cps() * time
+            self.total_cookies += self.get_cps() * time
+            self.current_time += time
+        else
+            return
+
 
     def buy_item(self, item_name, cost, additional_cps):
         """
@@ -89,7 +130,37 @@ class ClickerState:
 
         Should do nothing if you cannot afford the item
         """
-        pass
+
+        if cost <= self.get_cookies():
+            self.history_list.append((self.get_time(), item_name, cost, self.get_total_cookies()))
+            self.current_cookies -= cost
+            self.cps += additional_cps
+        else:
+            return
+
+def test_ClickerState():
+
+    state = ClickerState()
+    print state
+    print
+    print 'time until 10 cookies- ', state.time_until(10), ' seconds'
+    print
+    print 'waiting 20 seconds......'
+    state.wait(20)
+    print state
+    print
+    print 'buying a grandma........'
+    state.buy_item('grandma', 15, 5)
+    print state
+    print
+    print 'history- ', state.get_history()
+    print
+    print 'time until 17 cookies- ', state.time_until(17), ' seconds'
+
+
+
+
+
 
 
 def simulate_clicker(build_info, duration, strategy):
@@ -170,6 +241,9 @@ def run():
     # run_strategy("Expensive", SIM_TIME, strategy_expensive)
     # run_strategy("Best", SIM_TIME, strategy_best)
 
-run()
+#run()
+
+
+test_ClickerState()
 
 
