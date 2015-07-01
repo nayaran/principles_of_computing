@@ -15,6 +15,7 @@ SIM_TIME = 10000000000.0
 #SIM_TIME = 10
 
 
+
 class ClickerState:
     """
     Simple class to keep track of the game state.
@@ -29,11 +30,11 @@ class ClickerState:
         history_list- History list would be a list of tuples of the form:
                       (time, item, cost of item, total cookies)
         """
-        self.total_cookies = 0.0
-        self.current_cookies = 0.0
-        self.current_time = 0.0
-        self.cps = 1.0
-        self.history_list = [(0.0, None, 0.0, 0.0)]
+        self.__total_cookies = 0.0
+        self.__current_cookies = 0.0
+        self.__current_time = 0.0
+        self.__cps = 1.0
+        self.__history_list = [(0.0, None, 0.0, 0.0)]
 
     def __str__(self):
         """
@@ -55,7 +56,7 @@ class ClickerState:
 
         Should return a float
         """
-        return self.total_cookies
+        return self.__total_cookies
 
     def get_cookies(self):
         """
@@ -64,7 +65,7 @@ class ClickerState:
 
         Should return a float
         """
-        return self.current_cookies
+        return self.__current_cookies
 
     def get_cps(self):
         """
@@ -72,7 +73,7 @@ class ClickerState:
 
         Should return a float
         """
-        return self.cps
+        return self.__cps
 
     def get_time(self):
         """
@@ -80,7 +81,7 @@ class ClickerState:
 
         Should return a float
         """
-        return self.current_time
+        return self.__current_time
 
     def get_history(self):
         """
@@ -94,7 +95,7 @@ class ClickerState:
         Should return a copy of any internal data structures,
         so that they will not be modified outside of the class.
         """
-        return list(self.history_list)
+        return list(self.__history_list)
 
     def time_until(self, cookies):
         """
@@ -110,7 +111,6 @@ class ClickerState:
             return math.ceil((cookies - self.get_cookies())/self.get_cps())
 
 
-
     def wait(self, time):
         """
         Wait for given amount of time and update state
@@ -118,12 +118,41 @@ class ClickerState:
         Should do nothing if time <= 0.0
         """
         if time > 0.0:
-            self.current_cookies += self.get_cps() * time
-            self.total_cookies += self.get_cps() * time
-            self.current_time += time
+            self.update_cookies(self.get_cps() * time)
+            self.update_total_cookies(self.get_cps() * time)
+            self.update_time(time)
         else:
             return
 
+    def update_cookies(self, cookies):
+        """
+        Updates cookies
+        """
+        self.__current_cookies += cookies
+
+    def update_total_cookies(self, cookies):
+        """
+        Updates total cookies
+        """
+        self.__total_cookies += cookies
+
+    def update_time(self, time):
+        """
+        Updates current time
+        """
+        self.__current_time += time
+
+    def update_cps(self, additional_cps):
+        """
+        Updates cps
+        """
+        self.__cps += additional_cps
+
+    def update_history(self, history_tuple):
+        """
+        Updates history list
+        """
+        self.__history_list.append(history_tuple)
 
     def buy_item(self, item_name, cost, additional_cps):
         """
@@ -131,14 +160,13 @@ class ClickerState:
 
         Should do nothing if you cannot afford the item
         """
-
         if cost <= self.get_cookies():
-            self.history_list.append((self.get_time(), item_name, cost, self.get_total_cookies()))
-            self.cps += additional_cps
-            self.current_cookies -= cost
+            self.update_history((self.get_time(), item_name, cost, self.get_total_cookies()))
+            self.update_cps(additional_cps)
+            self.update_cookies(-cost)
+
         else:
             return
-
 
 def simulate_clicker(build_info, duration, strategy):
     """
@@ -220,9 +248,11 @@ def simulate_clicker(build_info, duration, strategy):
         time_left = duration - state.get_time()
         #print 'still there is time left - ', time_left
         #print 'utilizing that time....'
-        state.current_cookies += state.get_cps() * time_left
-        state.total_cookies += state.get_cps() * time_left
-        state.current_time += time_left
+
+        state.update_cookies(state.get_cps() * time_left)
+        state.update_total_cookies(state.get_cps() * time_left)
+        state.update_time(time_left)
+
 
     #print state.get_time()
     #print duration
@@ -230,8 +260,6 @@ def simulate_clicker(build_info, duration, strategy):
     #print state.get_history()
     #print
     return state
-
-
 
 def strategy_cursor_broken(cookies, cps, history, time_left, build_info):
     """
@@ -299,7 +327,6 @@ def strategy_cheap(cookies, cps, history, time_left, build_info):
     else:
         return None
 
-
 def strategy_expensive(cookies, cps, history, time_left, build_info):
     """
     Always buy the most expensive item you can afford in the time left.
@@ -313,7 +340,7 @@ def strategy_expensive(cookies, cps, history, time_left, build_info):
     #print
     item_list = build_info.build_items()
     #print item_list
-    cost_list = [build_info.get_cost(item) for item in build_info.build_items()]
+    cost_list = [build_info.get_cost(item) for item in item_list]
     #print cost_list
 
     # unable to create dictionary with list comprehension :(
@@ -345,60 +372,56 @@ def strategy_expensive(cookies, cps, history, time_left, build_info):
 
 def strategy_best(cookies, cps, history, time_left, build_info):
     """
-    The best strategy that you are able to implement.
+    Always buy the cheapest item you can afford in the time left.
     """
-    #print 'inside strategy_best'
+    #print 'inside strategy_cheap'
 
     #print 'cookies- ', cookies
     #print 'cps- ', cps
     #print 'history- ', history
     #print 'time_left- ', time_left
+    #print 'build_info- ', build_info
     #print
-    item_list = build_info.build_items()
+    #item_list =
     #print item_list
     cost_list = [build_info.get_cost(item) for item in build_info.build_items()]
     #print cost_list
-
-    # unable to create dictionary with list comprehension :(
-    #items = { item: build_info.get_cost(item) for item in build_info.build_items() }
 
     # manually create the dictionary of items
     items = {}
     count = 0
 
     for cost in cost_list:
-        items[cost] = item_list[count]
+        items[cost] = build_info.build_items()[count]
         count += 1
 
     #print 'items- '
     #print items
 
+    # calculate the maximum cookies that we can earn in the time_left
+    # to purchase the item
+    cookies_available = cookies + cps * time_left
 
-    affordable_item_costs = [cost for cost in items.keys() if cost < time_left]
+    # get the list of items that can be purchased in the given time
+    affordable_items = [items[cost] for cost in cost_list if cost <= cookies_available]
 
-    if len(affordable_item_costs) > 0:
+    # create a value_dict with value, item pair
+    # where value = cps/cost for the item
 
-        total = 0.0
+    value_dict = {}
 
-        for cost in affordable_item_costs:
-            total += cost
+    for item in affordable_items:
+        value_dict[build_info.get_cps(item)/build_info.get_cost(item)] = item
 
-        avg_cost = total/len(affordable_item_costs)
 
-        min_diff = avg_cost
-        best_cost = 0.0
-
-        for cost in items.keys():
-            diff = abs(cost - avg_cost)
-            if diff < min_diff:
-                min_diff = diff
-                best_cost = cost
-
-        item = items[best_cost]
-        #print 'affordable_item_costs- ',affordable_item_costs
-        #print 'min_cost- ', min_cost
-        #print 'chosen item- ', item
-        return item
+    #print 'value dict- ',value_dict
+    if bool(value_dict):
+        # choose the item with the best value
+        best_value = max(value_dict.keys())
+        best_item = value_dict[best_value]
+        #print 'best_value- ', best_value
+        #print 'chosen item- ', best_item
+        return best_item
     else:
         return None
 
@@ -435,9 +458,10 @@ def run():
     print
     run_strategy("Best", SIM_TIME, strategy_best)
 
-run()
-
 def test():
+    """
+    tests for ClickerState
+    """
     state = ClickerState()
     print state
     print
@@ -456,7 +480,9 @@ def test():
     print 'time until 17 cookies- ', state.time_until(17), ' seconds'
 
 def test2():
-
+    """
+    tests for few failed cases from owltest
+    """
     #print strategy_cheap(500000.0, 1.0, [(0.0, None, 0.0, 0.0)], 5.0, provided.BuildInfo({'A': [5.0, 1.0], 'C': [50000.0, 3.0], 'B': [500.0, 2.0]}, 1.15))
     #print strategy_cheap(3.0, 100.0, [(0.0, None, 0.0, 0.0)], 600.0, provided.BuildInfo({'A': [5.0, 1.0], 'C': [50000.0, 3.0], 'B': [500.0, 2.0]}, 1.15))
     #print strategy_expensive(1.0, 3.0, [(0.0, None, 0.0, 0.0)], 17.0, provided.BuildInfo({'A': [5.0, 1.0], 'C': [50000.0, 3.0], 'B': [500.0, 2.0]}, 1.15))
@@ -472,6 +498,6 @@ def test2():
     print obj.time_until(22.0)
     print obj
 
-#test2()
-
+#run()
 #test()
+#test2()
