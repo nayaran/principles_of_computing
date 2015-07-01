@@ -11,8 +11,9 @@ codeskulptor.set_timeout(20)
 import poc_clicker_provided as provided
 
 # Constants
-#SIM_TIME = 10000000000.0
-SIM_TIME = 100
+SIM_TIME = 10000000000.0
+#SIM_TIME = 40
+
 
 class ClickerState:
     """
@@ -120,7 +121,7 @@ class ClickerState:
             self.current_cookies += self.get_cps() * time
             self.total_cookies += self.get_cps() * time
             self.current_time += time
-        else
+        else:
             return
 
 
@@ -133,34 +134,10 @@ class ClickerState:
 
         if cost <= self.get_cookies():
             self.history_list.append((self.get_time(), item_name, cost, self.get_total_cookies()))
-            self.current_cookies -= cost
             self.cps += additional_cps
+            self.current_cookies -= cost
         else:
             return
-
-def test_ClickerState():
-
-    state = ClickerState()
-    print state
-    print
-    print 'time until 10 cookies- ', state.time_until(10), ' seconds'
-    print
-    print 'waiting 20 seconds......'
-    state.wait(20)
-    print state
-    print
-    print 'buying a grandma........'
-    state.buy_item('grandma', 15, 5)
-    print state
-    print
-    print 'history- ', state.get_history()
-    print
-    print 'time until 17 cookies- ', state.time_until(17), ' seconds'
-
-
-
-
-
 
 
 def simulate_clicker(build_info, duration, strategy):
@@ -169,9 +146,85 @@ def simulate_clicker(build_info, duration, strategy):
     duration with the given strategy.  Returns a ClickerState
     object corresponding to the final state of the game.
     """
+    print 'inside simulate_clicker'
+    print 'duration - ', duration
 
-    # Replace with your code
-    return ClickerState()
+    build_info_clone = build_info.clone()
+    state = ClickerState()
+
+    while(state.get_time() <= duration):
+        print
+        print 'inside loop'
+        # Check the current time and break out of the loop if the duration
+        # has been passed.
+
+        print 'current_time - ', state.get_time()
+        if state.get_time() > duration:
+            break
+
+        print 'state before strategy function...'
+        print state
+        print 'calling strategy function'
+
+        # Call the strategy function with the appropriate arguments to
+        # determine which item to purchase next. If the strategy function
+        # returns None, you should break out of the loop, as that means
+        # no more items will be purchased.
+
+        item_to_buy = strategy(state.get_cookies(), state.get_cps(),
+                                    state.get_history(), state.get_time(),
+                                    build_info_clone)
+
+        print 'item_to_buy- ', item_to_buy
+
+        # End the simulation if strategy returned None
+        if item_to_buy == None:
+            break
+
+        # Get the cost of the item to purchase
+        item_cost = build_info_clone.get_cost(item_to_buy)
+
+        print 'item_cost- ', item_cost
+        # Determine how much time must elapse until it is possible to
+        # purchase the item. If you would have to wait past the duration of
+        # the simulation to purchase the item, you should end the simulation.
+        time_to_wait = state.time_until(item_cost)
+
+        print 'time_to_wait- ', time_to_wait
+
+        if state.get_time() + time_to_wait > duration:
+            # Don't have enough time left. End the simulation
+            break
+
+        # Wait for time_to_wait
+        state.wait(time_to_wait)
+
+        # Purchase the item
+        state.buy_item(item_to_buy, item_cost,
+                        build_info_clone.get_cps(item_to_buy))
+
+        # Update the build information.
+        build_info_clone.update_item(item_to_buy)
+        print 'state after purchase function...'
+        print state
+
+    print 'outside loop'
+
+    if state.get_time() <= duration:
+        time_left = duration - state.get_time()
+        print 'still there is time left - ', time_left
+        print 'utilizing that time....',
+        state.current_cookies += state.get_cps() * time_left
+        state.total_cookies += state.get_cps() * time_left
+        state.current_time += time_left
+
+    print state.get_time()
+    print duration
+
+    print state.get_history()
+    print
+    return state
+
 
 
 def strategy_cursor_broken(cookies, cps, history, time_left, build_info):
@@ -241,9 +294,27 @@ def run():
     # run_strategy("Expensive", SIM_TIME, strategy_expensive)
     # run_strategy("Best", SIM_TIME, strategy_best)
 
-#run()
+run()
 
+def test():
 
-test_ClickerState()
+    state = ClickerState()
+    print state
+    print
+    print 'time until 10 cookies- ', state.time_until(10), ' seconds'
+    print
+    print 'waiting 20 seconds......'
+    state.wait(20)
+    print state
+    print
+    print 'buying a grandma........'
+    state.buy_item('grandma', 15, 5)
+    print state
+    print
+    print 'history- ', state.get_history()
+    print
+    print 'time until 17 cookies- ', state.time_until(17), ' seconds'
+
+#test()
 
 
