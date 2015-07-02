@@ -100,28 +100,6 @@ class Apocalypse(poc_grid.Grid):
         Shortest paths avoid obstacles and use entity_type distances
         """
 
-
-        """
-        Create a new grid visited of the same size as the original grid and
-        initialize its cells to be empty.
-        Create a 2D list distance_field of the same size as the
-        original grid and initialize each of its entries to be
-        the product of the height times the width of the grid.
-        (This value is larger than any possible distance.)
-        Create a queue boundary that is a copy of either
-        the zombie list or the human list. For cells in the queue,
-        initialize visited to be FULL and distance_field to be zero.
-        We recommend that you use our Queue class.
-        Finally, implement a modified version of the BFS search
-        described above. For each neighbor_cell in the inner loop,
-        check whether the cell has not been visited and is passable.
-        If so, update the visited grid and the boundary queue as specified.
-        In this case, also update the neighbor's distance to be the
-        distance to current_cell plus one
-        (distance_field[current_cell[0]][current_cell[1]] + 1).
-
-        """
-
         height = self.get_grid_height()
         width = self.get_grid_width()
 
@@ -190,7 +168,8 @@ class Apocalypse(poc_grid.Grid):
                     # add the neighbor to the boundary list for progressing
                     # in bfs
                     boundary.enqueue(neighbor)
-
+        print
+        print 'after bfs for ', entity_type, '......'
         print
         print 'visited- '
         print visited
@@ -198,7 +177,6 @@ class Apocalypse(poc_grid.Grid):
         print 'distance_field'
         for distance in distance_field:
             print distance
-
 
 
         return distance_field
@@ -209,19 +187,126 @@ class Apocalypse(poc_grid.Grid):
         Function that moves humans away from zombies, diagonal moves
         are allowed
         """
-        pass
+        updated_human_list = []
+
+        # iterate over each human and update its location
+        # so that it is one step farther from the nearest zombie
+        for human in self.humans():
+
+            print
+            print 'for human- ', human
+
+            row = human[0]
+            col = human[1]
+
+            # find the neighbors
+            neighbors = self.eight_neighbors(row, col)
+
+            print 'neighbors are- ', neighbors
+
+            # stores the details of each neighbor as the value and its
+            # distance from the nearest zombie as the key
+
+            distance_dict = {}
+
+            for neighbor in neighbors:
+                    distance = zombie_distance_field[neighbor[0]][neighbor[1]]
+                    if distance == self.get_grid_width()*self.get_grid_height():
+                        distance = -1
+                    distance_dict[distance] = neighbor
+
+            print 'distance_dict- '
+
+            for key in distance_dict:
+                print 'neighbor at - ', distance_dict[key], ' is at distance- ',key
+
+            # retrieves the best neighbor
+            # i.e. the neighbor which is at maximume distance from the
+            # nearest zombie
+            best_neighbor = distance_dict[max(distance_dict.keys())]
+
+            print 'best neighbor- ', best_neighbor
+
+            # updates the human list
+            updated_human_list.append(best_neighbor)
+
+        # install the movement of the humans
+        self._human_list = updated_human_list
 
     def move_zombies(self, human_distance_field):
         """
         Function that moves zombies towards humans, no diagonal moves
         are allowed
         """
-        pass
+
+        print self
+        updated_zombie_list = []
+
+        # iterate over each zombie and update its location
+        # so that it is one step farther from the nearest zombie
+        for zombie in self.zombies():
+
+            print
+            print 'for zombie- ', zombie
+
+            row = zombie[0]
+            col = zombie[1]
+
+            # find the neighbors
+            neighbors = self.four_neighbors(row, col)
+
+            print 'neighbors are- ', neighbors
+
+            # stores the details of each neighbor as the value and its
+            # distance from the nearest human as the key
+
+            distance_dict = {}
+
+
+            # also find the current_distance
+            current_distance = human_distance_field[zombie[0]][zombie[1]]
+
+            print 'current distance from nearest human- ', current_distance
+            for neighbor in neighbors:
+
+                    distance = human_distance_field[neighbor[0]][neighbor[1]]
+                    if distance == self.get_grid_width()*self.get_grid_height():
+                        distance = 100
+                    print neighbor, distance
+                    distance_dict[distance] = neighbor
+
+            print 'distance_dict- '
+
+            for key in distance_dict:
+                print 'neighbor at - ', distance_dict[key], ' is at distance- ',key
+
+            # retrieves the best neighbor
+            # i.e. the neighbor which is at minimum distance from the
+            # nearest human
+
+            min_distance = min(distance_dict.keys())
+
+            # update the best neighbor only if it actually at a better
+            # position than our current position
+            if min_distance < current_distance:
+                best_neighbor = distance_dict[min_distance]
+            else:
+                best_neighbor = zombie
+            print 'best neighbor- ', best_neighbor
+
+            # updates the zombie list
+            updated_zombie_list.append(best_neighbor)
+
+        # install the movement of the zombies
+        self._zombie_list = updated_zombie_list
+
 # Start up gui for simulation - You will need to write some code above
 # before this will work without errors
 
 def test():
-
+    """
+    implements basic testing for the game
+    """
 
     obstacle_list = [(0,3), (0, 4), (3, 3), (1,1), (2, 2)]
     zombie_list = [(1,2), (2, 4)]
@@ -244,12 +329,33 @@ def test():
     print 'count- ', game.num_zombies()
     for zombie in game.zombies():
         print zombie
-
+    print
+    print 'grid looks like this.........'
+    print game
     print
     print '------compute_distance----------'
     print
-    game.compute_distance_field(HUMAN)
+    distance_field = game.compute_distance_field(ZOMBIE)
+    print
+    print 'testing movements.......'
+    print
+    print 'humans-'
+    print
+    print 'grid looks like this...'
+    print game
+    game.move_humans(distance_field)
+
 
 
 #test()
+#obj = Apocalypse(3, 3, [], [(2, 2)], [(1, 1)])
+#dist = [[4, 3, 2], [3, 2, 1], [2, 1, 0]]
+#obj.move_humans(dist)
+#obj.humans()
 #poc_zombie_gui.run_gui(Apocalypse(30, 40))
+
+#obj = Apocalypse(3, 3, [], [(1, 1)], [(1, 1)])
+#print obj
+#dist = [[2, 1, 2], [1, 0, 1], [2, 1, 2]]
+#obj.move_zombies(dist)
+#obj.zombies() expected location to be one of [(1, 1)] but received (1, 2)
