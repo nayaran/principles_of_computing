@@ -74,14 +74,22 @@ class Grid:
         Returns horiz/vert neighbors of cell (row, col)
         """
         ans = []
+        # NORTH
         if row > 0:
             ans.append((row - 1, col))
+
+        # SOUTH
         if row < self._grid_height - 1:
             ans.append((row + 1, col))
+
+        # WEST
         if col > 0:
             ans.append((row, col - 1))
+
+        # EAST
         if col < self._grid_width - 1:
             ans.append((row, col + 1))
+
         return ans
 
     def eight_neighbors(self, row, col):
@@ -131,5 +139,5 @@ class Grid:
         """
         return (point[1] / cell_size, point[0] / cell_size)
 
-new_grid = Grid(5, 10)
-print new_grid
+#new_grid = Grid(5, 10)
+#print new_grid
