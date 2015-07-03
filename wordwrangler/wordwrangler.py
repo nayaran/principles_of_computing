@@ -52,7 +52,7 @@ def intersect(list1, list2):
 # Functions to perform merge sort
 
 def merge(list1, list2):
-    """
+   """
     Merge two sorted lists.
 
     Returns a new sorted list containing all of the elements that
@@ -60,7 +60,31 @@ def merge(list1, list2):
 
     This function can be iterative.
     """
-    return []
+    merged_list = []
+
+    counter1 = 0
+    counter2 = 0
+
+    # traverse over both the list and insert the shorter element first
+    while counter1 < len(list1) and counter2 < len(list2):
+        if list1[counter1] < list2[counter2]:
+            merged_list.append(list1[counter1])
+            counter1 += 1
+        elif list1[counter1] > list2[counter2]:
+            merged_list.append(list2[counter2])
+            counter2 += 1
+        else:
+            merged_list.append(list1[counter1])
+            counter1 += 1
+
+    # account for premature termination of above loop
+    for counter in range(counter1, len(list1)):
+        merged_list.append(list1[counter])
+
+    for counter in range(counter2, len(list2)):
+        merged_list.append(list2[counter])
+
+    return merged_list
 
 def merge_sort(list1):
     """
@@ -70,7 +94,22 @@ def merge_sort(list1):
 
     This function should be recursive.
     """
-    return []
+    # return if list is empty or contains only one element
+    if len(list1) < 2:
+        return list1
+
+    mid = len(list1)/2
+
+    # split into two halves
+    list_left = list1[:mid]
+    list_right = list1[mid:]
+
+    # merge individual lists
+    list_left = merge_sort(list_left)
+    list_right = merge_sort(list_right)
+
+    return merge(list_left, list_right)
+
 
 # Function to generate all strings for the word wrangler game
 
