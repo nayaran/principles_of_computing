@@ -20,7 +20,16 @@ def remove_duplicates(list1):
 
     This function can be iterative.
     """
-    return []
+
+    # iterative version1
+    new_list = []
+
+    for word in list1:
+        if word not in new_list:
+            new_list.append(word)
+
+    return new_list
+
 
 def intersect(list1, list2):
     """
@@ -31,7 +40,14 @@ def intersect(list1, list2):
 
     This function can be iterative.
     """
-    return []
+    # iterative version1
+    new_list = []
+
+    for word in list1:
+        if word in list2:
+            new_list.append(word)
+
+    return new_list
 
 # Functions to perform merge sort
 
