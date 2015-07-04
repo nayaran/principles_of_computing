@@ -5,7 +5,7 @@ Mini-max Tic-Tac-Toe Player
 import poc_ttt_gui
 import poc_ttt_provided as provided
 import user40_wQSjFTIMLo_0 as poc_tree
-
+import user40_jZkWuMeHIs_1 as stack
 # Set timeout, as mini-max can take a long time
 import codeskulptor
 codeskulptor.set_timeout(60)
@@ -40,11 +40,14 @@ class ttt_tree(poc_tree.Tree):
         self._visited = True
 
     def score_board(self):
+        """
         winner = self._value.check_win()
         try:
             self._score = SCORES[winner]
         except KeyError:
             print 'Game still in progress'
+        """
+        self._score = 1
 
     def get_score(self):
         return self._score
@@ -52,15 +55,46 @@ class ttt_tree(poc_tree.Tree):
     def print_current_board(self):
         return self._value.__str__()
 
+def get_random_move(board):
+    """
+    This function takes a current board and returns a random move
+    for the player
+    """
 
-def dfs(tree, score, stack):
+    # Get the list of empty cells
+    empty_cells = board.get_empty_squares()
 
-    if tree._children == []:
-        return score_board(tree.get_value())
+    # Return a random tuple from the empty cells list
 
-    current_board = tree.pop_child()
+    try:
+        return random.choice(empty_cells)
+    except IndexError:
+        print 'no empty cells present!'
+        return -1,-1
 
-    #for child in current_board._children:
+def dfs(boundary, level):
+
+    print 'inside dfs, level - ', level
+
+    board = boundary.pop()
+
+    if board == "empty":
+        return []
+
+    print board.print_current_board()
+
+    #move = get_random_move(board.get_value())
+    #while move != (-1, -1):
+    #    move = get_random_move(board.get_value())
+    #    print move
+
+    for child in board._children:
+        if not child.is_visited():
+            child.visit()
+
+            boundary.push(child)
+            dfs(boundary, level + 1)
+
 
     #max_score = max[dfs[children] for child in tree.children]:
 
@@ -150,13 +184,40 @@ def test_ttt_tree():
     print
 
     board3 = ttt_tree(board1, [])
-    print 'main board - '
-    print board3
+    #print 'main board - '
+    #print board3
 
-    print
-    print 'testing pushing and popping....'
-    print
+    # testing dfs
 
+    board4 = ttt_tree(board1, [tree_board3, tree_board2])
+    #print 'board4- '
+    #print board4
+
+    board3.push_child(tree_board2)
+    board3.push_child(tree_board3)
+
+    #print 'board3- '
+    #print board3
+
+
+    board5 = ttt_tree(board1, [board4])
+    print 'board5- '
+    print board5
+
+
+    print 'testing dfs traversal.........'
+
+    boundary = stack.Stack()
+
+    boundary.push(board5)
+
+    print dfs(boundary, 0)
+
+
+
+    #print
+    #print 'testing pushing and popping....'
+    #print
     #print 'pushing board2- '
     #board3.push_child(tree_board2)
     #print board3
@@ -169,21 +230,22 @@ def test_ttt_tree():
     #board3.pop_child()
     #print board3
 
-    print
-    print 'testing visiting...'
-    print
-    print 'board3.is_visited()- ', board3.is_visited()
-    print 'visiting board3...'
-    board3.visit()
-    print 'board3.is_visited()- ', board3.is_visited()
+    #print
+    #print 'testing visiting...'
+    #print
+    #print 'board3.is_visited()- ', board3.is_visited()
+    #print 'visiting board3...'
+    #board3.visit()
+    #print 'board3.is_visited()- ', board3.is_visited()
 
-    print
-    print 'testing scoring...'
-    print
-    print 'board score- ', board3.get_score()
-    print 'scoring the board...'
-    board3.score_board()
-    print 'board score- ', board3.get_score()
+    #print
+    #print 'testing scoring...'
+    #print
+    #print 'board score- ', board3.get_score()
+    #print 'scoring the board...'
+    #board3.score_board()
+    #print 'board score- ', board3.get_score()
+
 
 
 test_ttt_tree()
