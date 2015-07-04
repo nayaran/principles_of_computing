@@ -57,7 +57,6 @@ class ttt_tree(poc_tree.Tree):
         return self._value.__str__()
 
 
-
 def get_random_move(board):
     """
     This function takes a current board and returns a random move
@@ -72,7 +71,6 @@ def get_random_move(board):
     try:
         return random.choice(empty_cells)
     except IndexError:
-        print 'no empty cells present!'
         return -1,-1
 
 def dfs(boundary, level):
@@ -80,37 +78,48 @@ def dfs(boundary, level):
     print 'inside dfs, level - ', level
     print 'len of boundary - ', len(boundary)
 
-    current_board = boundary.pop()
+    board_tree = boundary.pop()
 
     # create a copy of the current board
-    board = ttt_tree(current_board.get_value().clone(), [])
+    current_board = ttt_tree(board_tree.get_value().clone(), [])
 
-    if board == "empty":
+    if board_tree == "empty":
         return []
 
-    print board.print_current_board()
+    print board_tree.print_current_board()
 
     print 'adding children....'
 
+    # get the actual board
+    board = board_tree.get_value()
     children = 0
 
     while True:
-        move = get_random_move(board.get_value())
+        # get a move
+        move = get_random_move(board)
+        #print move
         if move == (-1, -1):
             break
 
-        board.get_value().move(move[0], move[1], provided.PLAYERO)
-
-        child = ttt_tree(board.get_value().clone(), [])
-        board.push_child(child)
+        board.move(move[0], move[1], provided.PLAYERO)
+        # create a new tree object
+        child = ttt_tree(current_board.get_value().clone(), [])
+        # implement the move
+        child.get_value().move(move[0], move[1], provided.PLAYERO)
+        # adds the child to the current board
+        current_board.push_child(child)
         #print board.print_current_board()
         children += 1
 
     print 'added - ', children, ' children...'
 
-    print board
+    print 'current_board-'
+    print current_board
 
-    for child in board._children:
+    #print 'children- '
+    #print current_board._children
+
+    for child in current_board._children:
         if not child.is_visited():
             child.visit()
 
@@ -233,7 +242,9 @@ def test_ttt_tree():
     board6.move(1, 1, provided.PLAYERX)
     board6.move(2, 2, provided.PLAYERX)
     board6.move(0, 1, provided.PLAYERX)
-
+    board6.move(1, 2, provided.PLAYERX)
+    board6.move(2, 1, provided.PLAYERX)
+    board6.move(0, 0, provided.PLAYERX)
     tree_board6 = ttt_tree(board6, [])
 
 
@@ -283,4 +294,9 @@ test_ttt_tree()
 
 
 
+
+
+
+#http://www.codeskulptor.org/#user40_0JYUQQtGJ7_3.py
+#http://www.codeskulptor.org/#user40_DAW3Vy7S5Q_1.py
 
