@@ -6,6 +6,7 @@ import poc_ttt_gui
 import poc_ttt_provided as provided
 import user40_wQSjFTIMLo_0 as poc_tree
 import user40_jZkWuMeHIs_1 as stack
+import random
 # Set timeout, as mini-max can take a long time
 import codeskulptor
 codeskulptor.set_timeout(60)
@@ -55,6 +56,8 @@ class ttt_tree(poc_tree.Tree):
     def print_current_board(self):
         return self._value.__str__()
 
+
+
 def get_random_move(board):
     """
     This function takes a current board and returns a random move
@@ -75,18 +78,37 @@ def get_random_move(board):
 def dfs(boundary, level):
 
     print 'inside dfs, level - ', level
+    print 'len of boundary - ', len(boundary)
 
-    board = boundary.pop()
+    current_board = boundary.pop()
+
+    # create a copy of the current board
+    board = ttt_tree(current_board.get_value().clone(), [])
 
     if board == "empty":
         return []
 
     print board.print_current_board()
 
-    #move = get_random_move(board.get_value())
-    #while move != (-1, -1):
-    #    move = get_random_move(board.get_value())
-    #    print move
+    print 'adding children....'
+
+    children = 0
+
+    while True:
+        move = get_random_move(board.get_value())
+        if move == (-1, -1):
+            break
+
+        board.get_value().move(move[0], move[1], provided.PLAYERO)
+
+        child = ttt_tree(board.get_value().clone(), [])
+        board.push_child(child)
+        #print board.print_current_board()
+        children += 1
+
+    print 'added - ', children, ' children...'
+
+    print board
 
     for child in board._children:
         if not child.is_visited():
@@ -200,16 +222,25 @@ def test_ttt_tree():
     #print board3
 
 
-    board5 = ttt_tree(board1, [board4])
-    print 'board5- '
-    print board5
+    #board5 = ttt_tree(board1, [board4])
+    #print 'board5- '
+    #print board5
 
 
     print 'testing dfs traversal.........'
 
+    board6 = provided.TTTBoard(dim, False)
+    board6.move(1, 1, provided.PLAYERX)
+    board6.move(2, 2, provided.PLAYERX)
+    board6.move(0, 1, provided.PLAYERX)
+
+    tree_board6 = ttt_tree(board6, [])
+
+
+
     boundary = stack.Stack()
 
-    boundary.push(board5)
+    boundary.push(tree_board6)
 
     print dfs(boundary, 0)
 
