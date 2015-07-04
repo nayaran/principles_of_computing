@@ -40,15 +40,8 @@ class ttt_tree(poc_tree.Tree):
     def visit(self):
         self._visited = True
 
-    def score_board(self):
-        """
-        winner = self._value.check_win()
-        try:
-            self._score = SCORES[winner]
-        except KeyError:
-            print 'Game still in progress'
-        """
-        self._score = 1
+    def score_the_board(self, winner):
+        self._score = SCORES[winner]
 
     def get_score(self):
         return self._score
@@ -74,63 +67,130 @@ def get_random_move(board):
         return -1,-1
 
 def dfs(boundary, level):
+    print
+    print 'inside dfs level - ', level
 
-    print 'inside dfs, level - ', level
-    print 'len of boundary - ', len(boundary)
+    # check whose turn it is
+    if level % 2 == 0:
+        player = provided.PLAYERX
+        print "X's turn, maximize level"
+    else:
+        player = provided.PLAYERO
+        print "0's turn, minimize level"
 
+    # pop the curent board from the stack to examine
     board_tree = boundary.pop()
 
     # create a copy of the current board
     current_board = ttt_tree(board_tree.get_value().clone(), [])
 
-    if board_tree == "empty":
-        return []
-
+    # check if we are at the leaf or not
+    winner = current_board.get_value().check_win()
     print board_tree.print_current_board()
 
-    print 'adding children....'
+    if winner != None:
+        # game finished, score the current board and return
 
+        if winner == 4:
+            print 'Game Drawn!!!'
+        elif winner == 2:
+            print 'X Wins!!!'
+        else:
+            print 'O Wins!!!'
+
+        print 'score- ', SCORES[winner]
+        return SCORES[winner]
+
+
+
+    # add children
     # get the actual board
     board = board_tree.get_value()
     children = 0
-
+    moves = []
+    score_dict = {}
     while True:
-        # get a move
+        # get a move for the temp board
         move = get_random_move(board)
         #print move
+
+        # exit if board is full
         if move == (-1, -1):
             break
 
-        board.move(move[0], move[1], provided.PLAYERO)
+
+        moves.append(move)
+        # update the temp board
+        board.move(move[0], move[1], player)
+
         # create a new tree object
         child = ttt_tree(current_board.get_value().clone(), [])
+
         # implement the move
-        child.get_value().move(move[0], move[1], provided.PLAYERO)
+        child.get_value().move(move[0], move[1], player)
+
         # adds the child to the current board
         current_board.push_child(child)
+
         #print board.print_current_board()
+        # updates the count of the children
         children += 1
+
+        # add the move to the score dict
+
+        score_dict[move] = 0
 
     print 'added - ', children, ' children...'
 
-    print 'current_board-'
+    print 'the current board, after updates, looks like this-'
+    print moves
     print current_board
 
-    #print 'children- '
-    #print current_board._children
+    scores = []
 
+    # execute dfs
     for child in current_board._children:
         if not child.is_visited():
             child.visit()
 
             boundary.push(child)
-            dfs(boundary, level + 1)
+            scores.insert(0, dfs(boundary, level + 1))
 
 
-    #max_score = max[dfs[children] for child in tree.children]:
+
+    counter = 0
+
+    # associate moves with scores
+    for moves in score_dict.keys():
+        score_dict[moves] = scores[counter]
+        counter += 1
 
 
-    #current_board =
+
+    best_score = 0
+
+    if player == provided.PLAYERX:
+        best_score = max(scores)
+        #print 'maximum- ', score
+
+    else:
+        best_score = min(scores)
+        #current_board.
+        #print 'minimum- ', score
+
+    best_move = (-1,-1)
+
+
+    for move in score_dict:
+        if score_dict[move] == best_score:
+            best_move = move
+
+    print 'score at level- ', level, 'is ', scores
+    print 'moves- ', score_dict
+    print 'best move being- ', best_move
+
+    return best_score
+
 
 
 def mm_move(board, player):
@@ -240,20 +300,22 @@ def test_ttt_tree():
 
     board6 = provided.TTTBoard(dim, False)
     board6.move(1, 1, provided.PLAYERX)
-    board6.move(2, 2, provided.PLAYERX)
-    board6.move(0, 1, provided.PLAYERX)
-    board6.move(1, 2, provided.PLAYERX)
-    board6.move(2, 1, provided.PLAYERX)
-    board6.move(0, 0, provided.PLAYERX)
+    #board6.move(2, 2, provided.PLAYERX)
+    board6.move(0, 2, provided.PLAYERX)
+    board6.move(0, 1, provided.PLAYERO)
+    board6.move(1, 2, provided.PLAYERO)
+    board6.move(2, 1, provided.PLAYERO)
+    board6.move(0, 0, provided.PLAYERO)
     tree_board6 = ttt_tree(board6, [])
 
-
-
+    print '----------------------'
+    print board6
+    print '----------------------'
     boundary = stack.Stack()
 
     boundary.push(tree_board6)
 
-    print dfs(boundary, 0)
+    dfs(boundary, 0)
 
 
 
@@ -294,9 +356,4 @@ test_ttt_tree()
 
 
 
-
-
-
-#http://www.codeskulptor.org/#user40_0JYUQQtGJ7_3.py
-#http://www.codeskulptor.org/#user40_DAW3Vy7S5Q_1.py
 
