@@ -151,20 +151,23 @@ def dfs(boundary, move, level, player):
     # maximize or minimize
     switch = player == provided.PLAYERX
 
+
+
     # check whose turn it is
+    print 'switch- ', switch
     if level % 2 == 0:
         if switch:
-            player = provided.PLAYERX
+            current_player = provided.PLAYERX
             print "X's turn, maximize level"
         else:
-            player = provided.PLAYERO
+            current_player = provided.PLAYERO
             print "0's turn, minimize level"
     else:
         if switch:
-            player = provided.PLAYERO
+            current_player = provided.PLAYERO
             print "0's turn, minimize level"
         else:
-            player = provided.PLAYERX
+            current_player = provided.PLAYERX
             print "X's turn, maximize level"
 
 
@@ -218,13 +221,13 @@ def dfs(boundary, move, level, player):
 
             moves.append(move)
             # update the temp board
-            board.move(move[0], move[1], player)
+            board.move(move[0], move[1], current_player)
 
             # create a new tree object
             child = ttt_tree(current_board.get_value().clone(), [])
 
             # implement the move
-            child.get_value().move(move[0], move[1], player)
+            child.get_value().move(move[0], move[1], current_player)
 
             # associates the move with the board
             child.set_parent_move(move)
@@ -299,9 +302,11 @@ def dfs(boundary, move, level, player):
     best_move = (-1,-1)
 
 
+
     for move in score_dict2:
         if score_dict2[move] == best_score:
             best_move = move
+
 
 
 
@@ -324,7 +329,10 @@ def dfs(boundary, move, level, player):
     print 'returning-  ', best_move, best_score
     return best_move, best_score
 
+def dfs_wrapper(boundary, move, level, player):
 
+    move = dfs(boundary, move, level, player)
+    return move[1], move[0]
 
 def mm_move(board, player):
     """
@@ -359,8 +367,8 @@ def mm_move(board, player):
     # initialize the boundary for dfs
     boundary.push(ttt_board)
 
-    return dfs(boundary, move, level, player)
-    #return 0, (-1, -1)
+    return dfs_wrapper(boundary, move, level, player)
+
 
 def move_wrapper(board, player, trials):
     """
@@ -513,4 +521,4 @@ def test_ttt_tree():
 #test_ttt_tree()
 
 #mm_move(provided.TTTBoard(3, False, [[provided.PLAYERX, provided.PLAYERX, provided.PLAYERO], [provided.EMPTY, provided.PLAYERX, provided.PLAYERX], [provided.PLAYERO, provided.EMPTY, provided.PLAYERO]]), provided.PLAYERO)
-mm_move(provided.TTTBoard(2, False, [[provided.EMPTY, provided.EMPTY], [provided.EMPTY, provided.EMPTY]]), provided.PLAYERX)
+#mm_move(provided.TTTBoard(2, False, [[provided.EMPTY, provided.EMPTY], [provided.EMPTY, provided.EMPTY]]), provided.PLAYERX)
