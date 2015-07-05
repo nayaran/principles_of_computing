@@ -4,9 +4,8 @@ Mini-max Tic-Tac-Toe Player
 
 import poc_ttt_gui
 import poc_ttt_provided as provided
-from poc_tree import Tree
-from user40_jZkWuMeHIs_1 import Stack
 import random
+
 # Set timeout, as mini-max can take a long time
 import codeskulptor
 codeskulptor.set_timeout(60)
@@ -16,19 +15,75 @@ SCORES = {provided.PLAYERX: 1,
           provided.DRAW: 0,
           provided.PLAYERO: -1}
 
-class ttt_tree(Tree):
+class Stack:
+    """
+    A simple implementation of a LIFO queue.
+    """
+
+    def __init__(self):
+        """
+        Initialize the queue.
+        """
+        self._items = []
+
+    def __len__(self):
+        """
+        Return the number of items in the queue.
+        """
+        return len(self._items)
+
+    def __iter__(self):
+        """
+        Create an iterator for the queue.
+        """
+        for item in self._items:
+            yield item
+
+    def __str__(self):
+        """
+        Return a string representation of the queue.
+        """
+        return str(self._items)
+
+    def push(self, item):
+        """
+        Add item to the queue.
+        """
+        self._items.insert(0, item)
+
+    def pop(self):
+        """
+        Remove and return the least recently inserted item.
+        """
+        try:
+            return self._items.pop(0)
+        except IndexError:
+            return 'empty'
+
+    def clear(self):
+        """
+        Remove all items from the queue.
+        """
+        self._items = []
+
+class ttt_tree():
     """
     Custom implementation of Tree suitable for TTT game.
     Value at each node is a TTT board
     """
 
-
     def __init__(self, value, children):
-        Tree.__init__(self, value, children)
+        self._value = value
+        self._children = children
         self._visited = False
         self._score = 0
         self._parent_move = (-1, -1)
 
+    def get_value(self):
+        """
+        Getter for node's value
+        """
+        return self._value
     def push_child(self, value):
         self._children.insert(0, value)
 
@@ -56,6 +111,19 @@ class ttt_tree(Tree):
     def print_current_board(self):
         return self._value.__str__()
 
+    def __str__(self):
+        """
+        Generate a string representation of the tree
+        Use an pre-order traversal of the tree
+        """
+
+        ans = "["
+        ans += str(self._value)
+
+        for child in self._children:
+             ans += ", "
+             ans += str(child)
+        return ans + "]"
 
 def get_random_move(board):
     """
@@ -273,7 +341,9 @@ def mm_move(board, player):
     boundary = Stack()
 
     # create ttt_board object from the given board
-    ttt_board = ttt_tree(board, [])
+
+    new_board = board.clone()
+    ttt_board = ttt_tree(new_board, [])
     print 'running minmax strategy on this board- '
     print '----------------------'
     print ttt_board
@@ -406,7 +476,7 @@ def test_ttt_tree():
     #print dfs(boundary, (-1, -1), 0, provided.PLAYERX)
     #print mm_move(board6, provided.PLAYERO)
 
-    print move_wrapper(board6, provided.PLAYERX, 1)
+    print move_wrapper(board6, provided.PLAYERO, 1)
     #print
     #print 'testing pushing and popping....'
     #print
@@ -440,8 +510,7 @@ def test_ttt_tree():
 
 
 
-test_ttt_tree()
+#test_ttt_tree()
 
-
-
-
+#mm_move(provided.TTTBoard(3, False, [[provided.PLAYERX, provided.PLAYERX, provided.PLAYERO], [provided.EMPTY, provided.PLAYERX, provided.PLAYERX], [provided.PLAYERO, provided.EMPTY, provided.PLAYERO]]), provided.PLAYERO)
+mm_move(provided.TTTBoard(2, False, [[provided.EMPTY, provided.EMPTY], [provided.EMPTY, provided.EMPTY]]), provided.PLAYERX)
