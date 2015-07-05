@@ -143,7 +143,7 @@ def dfs(boundary, level):
     print 'added - ', children, ' children...'
 
     print 'the current board, after updates, looks like this-'
-    print moves
+    print score_dict
     print current_board
 
     scores = []
@@ -185,9 +185,18 @@ def dfs(boundary, level):
         if score_dict[move] == best_score:
             best_move = move
 
+    print
     print 'score at level- ', level, 'is ', scores
-    print 'moves- ', score_dict
-    print 'best move being- ', best_move
+    #print 'moves- ', score_dict
+    #print 'best move being- ', best_move
+    if level % 2 == 0:
+        print "X's turn, maximize level"
+        print "Among- ", score_dict
+        print "X should choose- ", best_move
+    else:
+        print "O's turn, minimize level"
+        print "Among- ", score_dict
+        print "O should choose- ", best_move
 
     return best_score
 
@@ -301,8 +310,8 @@ def test_ttt_tree():
     board6 = provided.TTTBoard(dim, False)
     board6.move(1, 1, provided.PLAYERX)
     #board6.move(2, 2, provided.PLAYERX)
-    board6.move(0, 2, provided.PLAYERX)
-    board6.move(0, 1, provided.PLAYERO)
+    board6.move(0, 2, provided.PLAYERO)
+    board6.move(0, 1, provided.PLAYERX)
     board6.move(1, 2, provided.PLAYERO)
     board6.move(2, 1, provided.PLAYERO)
     board6.move(0, 0, provided.PLAYERO)
