@@ -4,8 +4,8 @@ Mini-max Tic-Tac-Toe Player
 
 import poc_ttt_gui
 import poc_ttt_provided as provided
-import user40_wQSjFTIMLo_0 as poc_tree
-import user40_jZkWuMeHIs_1 as stack
+from poc_tree import Tree
+from user40_jZkWuMeHIs_1 import Stack
 import random
 # Set timeout, as mini-max can take a long time
 import codeskulptor
@@ -16,7 +16,7 @@ SCORES = {provided.PLAYERX: 1,
           provided.DRAW: 0,
           provided.PLAYERO: -1}
 
-class ttt_tree(poc_tree.Tree):
+class ttt_tree(Tree):
     """
     Custom implementation of Tree suitable for TTT game.
     Value at each node is a TTT board
@@ -24,7 +24,7 @@ class ttt_tree(poc_tree.Tree):
 
 
     def __init__(self, value, children):
-        poc_tree.Tree.__init__(self, value, children)
+        Tree.__init__(self, value, children)
         self._visited = False
         self._score = 0
         self._parent_move = (-1, -1)
@@ -79,13 +79,27 @@ def dfs(boundary, move, level, player):
     print 'inside dfs level - ', level
     print '------------------------------'
 
+    # switch for determining whether to
+    # maximize or minimize
+    switch = player == provided.PLAYERX
+
     # check whose turn it is
     if level % 2 == 0:
-        player = provided.PLAYERX
-        print "X's turn, maximize level"
+        if switch:
+            player = provided.PLAYERX
+            print "X's turn, maximize level"
+        else:
+            player = provided.PLAYERO
+            print "0's turn, minimize level"
     else:
-        player = provided.PLAYERO
-        print "0's turn, minimize level"
+        if switch:
+            player = provided.PLAYERO
+            print "0's turn, minimize level"
+        else:
+            player = provided.PLAYERX
+            print "X's turn, maximize level"
+
+
 
     # pop the curent board from the stack to examine
     board_tree = boundary.pop()
@@ -197,12 +211,20 @@ def dfs(boundary, move, level, player):
     # calculate max_score and best_move
     best_score = 0
 
-    if player == provided.PLAYERX:
+    # implement the strategy for the player
+    # maximise, if PLAYERX
+    # minimize, if PLAYERO
+    if switch:
         best_score = max(score_dict2.values())
-        #print 'maximum- ', score
-
     else:
         best_score = min(score_dict2.values())
+
+    #if player == provided.PLAYERX:
+    #    best_score = max(score_dict2.values())
+        #print 'maximum- ', score
+
+    #else:
+    #    best_score = min(score_dict2.values())
         #current_board.
         #print 'minimum- ', score
 
@@ -244,10 +266,31 @@ def mm_move(board, player):
     of the given board and the second element is the desired move as a
     tuple, (row, col).
     """
+    # initialize
+    level = 0
+    move = (-1, -1)
+    # get a stack implementation for dfs
+    boundary = Stack()
 
-    #root = poc_tree.Tree(board, [])
+    # create ttt_board object from the given board
+    ttt_board = ttt_tree(board, [])
+    print 'running minmax strategy on this board- '
+    print '----------------------'
+    print ttt_board
+    print '----------------------'
+    print 'to find the best move for ',
 
-    return 0, (-1, -1)
+    # determine the current player
+    if player == provided.PLAYERX:
+        print 'PLAYERX'
+    else:
+        print 'PLAYERO'
+
+    # initialize the boundary for dfs
+    boundary.push(ttt_board)
+
+    return dfs(boundary, move, level, player)
+    #return 0, (-1, -1)
 
 def move_wrapper(board, player, trials):
     """
@@ -255,6 +298,7 @@ def move_wrapper(board, player, trials):
     for Monte Carlo Tic-Tac-Toe.
     """
     move = mm_move(board, player)
+    move = move[1], move[0]
     assert move[1] != (-1, -1), "returned illegal move (-1, -1)"
     return move[1]
 
@@ -339,29 +383,30 @@ def test_ttt_tree():
     #print board5
 
 
-    print 'testing dfs traversal for initial board-'
+    #print 'testing dfs traversal for initial board-'
 
     board6 = provided.TTTBoard(dim, False)
-    board6.move(1, 1, provided.PLAYERX)
+    #board6.move(1, 1, provided.PLAYERX)
     board6.move(2, 0, provided.PLAYERO)
     board6.move(0, 2, provided.PLAYERO)
     board6.move(0, 1, provided.PLAYERX)
-    board6.move(1, 2, provided.PLAYERX)
+    board6.move(1, 0, provided.PLAYERX)
     board6.move(2, 1, provided.PLAYERO)
     board6.move(0, 0, provided.PLAYERO)
-    tree_board6 = ttt_tree(board6, [])
+    board6.move(2, 2, provided.PLAYERX)
+    #tree_board6 = ttt_tree(board6, [])
 
-    print '----------------------'
-    print board6
-    print '----------------------'
-    boundary = stack.Stack()
+    #print '----------------------'
+    #print board6
+    #print '----------------------'
+    #boundary = stack.Stack()
 
-    boundary.push(tree_board6)
+    #boundary.push(tree_board6)
 
-    print dfs(boundary, (-1, -1), 0, provided.PLAYERX)
+    #print dfs(boundary, (-1, -1), 0, provided.PLAYERX)
+    #print mm_move(board6, provided.PLAYERO)
 
-
-
+    print move_wrapper(board6, provided.PLAYERX, 1)
     #print
     #print 'testing pushing and popping....'
     #print
