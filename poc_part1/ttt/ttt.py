@@ -1,60 +1,20 @@
 """
-Mini-max Tic-Tac-Toe Player
+Monte Carlo Tic-Tac-Toe Player
 """
 
-import poc_ttt_gui
-import poc_ttt_provided as provided
-import user40_wQSjFTIMLo_0 as poc_tree
-import user40_jZkWuMeHIs_1 as stack
 import random
-# Set timeout, as mini-max can take a long time
-import codeskulptor
-codeskulptor.set_timeout(60)
+import poc_ttt_gui
+#import user40_xwPsYGoWjO_5 as provided
+import poc_ttt_provided as provided
 
-# SCORING VALUES - DO NOT MODIFY
-SCORES = {provided.PLAYERX: 1,
-          provided.DRAW: 0,
-          provided.PLAYERO: -1}
+# Constants for Monte Carlo simulator
+# You may change the values of these constants as desired, but
+# do not change their names.
+NTRIALS = 6         # Number of trials to run
+SCORE_CURRENT = 1.0 # Score for squares played by the current player
+SCORE_OTHER = 1.0   # Score for squares played by the other player
 
-class ttt_tree(poc_tree.Tree):
-    """
-    Custom implementation of Tree suitable for TTT game.
-    Value at each node is a TTT board
-    """
-
-
-    def __init__(self, value, children):
-        poc_tree.Tree.__init__(self, value, children)
-        self._visited = False
-        self._score = 0
-        self._parent_move = (-1, -1)
-
-    def push_child(self, value):
-        self._children.insert(0, value)
-
-    def pop_child(self):
-        return self._children.pop(len(self._children) - 1)
-
-    def is_visited(self):
-        return self._visited
-
-    def visit(self):
-        self._visited = True
-
-    def set_score(self, score):
-        self._score = score
-
-    def get_score(self):
-        return self._score
-
-    def set_parent_move(self, move):
-        self._parent_move = move
-
-    def get_parent_move(self):
-        return self._parent_move
-
-    def print_current_board(self):
-        return self._value.__str__()
+# Add your functions here.
 
 
 def get_random_move(board):
@@ -71,377 +31,231 @@ def get_random_move(board):
     try:
         return random.choice(empty_cells)
     except IndexError:
+        print 'no empty cells present!'
         return -1,-1
 
-def dfs(boundary, move, level, player):
-    print
-    print '------------------------------'
-    print 'inside dfs level - ', level
-    print '------------------------------'
-
-    # switch for determining whether to
-    # maximize or minimize
-    switch = player == provided.PLAYERX
-
-    # check whose turn it is
-    if level % 2 == 0:
-        if switch:
-            player = provided.PLAYERX
-            print "X's turn, maximize level"
-        else:
-            player = provided.PLAYERO
-            print "0's turn, minimize level"
-    else:
-        if switch:
-            player = provided.PLAYERO
-            print "0's turn, minimize level"
-        else:
-            player = provided.PLAYERX
-            print "X's turn, maximize level"
-
-
-
-    # pop the curent board from the stack to examine
-    board_tree = boundary.pop()
-
-    # create a copy of the current board
-    current_board = ttt_tree(board_tree.get_value().clone(), [])
-    parent_move = move
-
-    # check if we are at the leaf or not
-    winner = current_board.get_value().check_win()
-
-    print board_tree.print_current_board()
-    print 'board-move was- ', parent_move
-
-    score_dict2 = {}
-
-    if winner != None:
-        # game finished, score the current board and return
-
-        if winner == 4:
-            print 'Game Drawn!!!'
-        elif winner == 2:
-            print 'X Wins!!!'
-        else:
-            print 'O Wins!!!'
-
-        score_dict2[move] = SCORES[winner]
-        #print 'score- ', SCORES[winner]
-        #return SCORES[winner]
-        #return move, SCORES[winner]
-
-    else:
-        # add children
-        # get the actual board
-        board = board_tree.get_value()
-        children = 0
-        moves = []
-        score_dict = {}
-        while True:
-            # get a move for the temp board
-            move = get_random_move(board)
-            #print move
-
-            # exit if board is full
-            if move == (-1, -1):
-                break
-
-
-            moves.append(move)
-            # update the temp board
-            board.move(move[0], move[1], player)
-
-            # create a new tree object
-            child = ttt_tree(current_board.get_value().clone(), [])
-
-            # implement the move
-            child.get_value().move(move[0], move[1], player)
-
-            # associates the move with the board
-            child.set_parent_move(move)
-
-            # adds the child to the current board
-            current_board.push_child(child)
-
-            #print board.print_current_board()
-            # updates the count of the children
-            children += 1
-
-            # add the move to the score dict
-
-            #score_dict[move] = 0
-
-
-        print 'added- ', children, ' children...'
-        print 'moves- ', moves
-        print 'children added- '
-        print current_board
-
-        scores = []
-        score_dict2 = {}
-
-        # execute dfs
-        for child in current_board._children:
-            if not child.is_visited():
-                child.visit()
-
-                boundary.push(child)
-                print
-                print '.........diving in dfs at level ', level, ' into ', level + 1
-                move, score = dfs(boundary, child.get_parent_move(), level + 1, player)
-                print
-                print '.........back to dfs at level', level, ' from level ', level + 1
-                print
-                print 'for child- '
-                print child.print_current_board()
-                print 'received- '
-                print 'move- ', move
-                print 'score- ', score
-                score_dict2[child.get_parent_move()] = score
-                child.set_score(score)
-                #scores.insert(0, dfs(boundary, child.get_parent_move(), level + 1))
-
-
-    #SCORES[winner]
-    #print 'the current board, at level- ', level, ' after scoring neighbors, looks like this-'
-    #print score_dict2
-    #print current_board
-
-    # calculate max_score and best_move
-    best_score = 0
-
-    # implement the strategy for the player
-    # maximise, if PLAYERX
-    # minimize, if PLAYERO
-    if switch:
-        best_score = max(score_dict2.values())
-    else:
-        best_score = min(score_dict2.values())
-
-    #if player == provided.PLAYERX:
-    #    best_score = max(score_dict2.values())
-        #print 'maximum- ', score
-
-    #else:
-    #    best_score = min(score_dict2.values())
-        #current_board.
-        #print 'minimum- ', score
-
-    best_move = (-1,-1)
-
-
-    for move in score_dict2:
-        if score_dict2[move] == best_score:
-            best_move = move
-
-
-
-    current_board.set_score(best_score)
-
-    #print 'score at level- ', level, 'is ', score_dict2.values()
-    #print 'moves- ', score_dict
-    #print 'best move being- ', best_move
-    #if level % 2 == 0:
-    #    print "X's turn, maximize level"
-    #    print "Among- ", score_dict2
-    #    print "X should choose- ", best_move
-    #else:
-    #    print "O's turn, minimize level"
-    #    print "Among- ", score_dict2
-    #    print "O should choose- ", best_move
-
-    print 'at level- ', level
-    print 'score_dict- ', score_dict2
-    print 'returning-  ', best_move, best_score
-    return best_move, best_score
-
-
-
-def mm_move(board, player):
+def mc_trial(board, player):
     """
-    Make a move on the board.
-
-    Returns a tuple with two elements.  The first element is the score
-    of the given board and the second element is the desired move as a
-    tuple, (row, col).
+    This function takes a current board and the next player to move.
+    The function should play a game starting with the given player
+    by making random moves, alternating between players.
+    The function should return when the game is over.
+    The modified board will contain the state of the game,
+    so the function does not return anything.
+    In other words, the function should modify the board input.
     """
-    # initialize
-    level = 0
-    move = (-1, -1)
-    # get a stack implementation for dfs
-    boundary = stack.Stack()
+    winner = None
 
-    # create ttt_board object from the given board
-    ttt_board = ttt_tree(board, [])
-    print 'running minmax strategy on this board- '
-    print '----------------------'
-    print ttt_board
-    print '----------------------'
-    print 'to find the best move for ',
+    while winner == None:
+        # Move
+        row, col = get_random_move(board)
+        board.move(row, col, player)
 
-    # determine the current player
-    if player == provided.PLAYERX:
-        print 'PLAYERX'
-    else:
-        print 'PLAYERO'
+        # Update state
+        winner = board.check_win()
 
-    # initialize the boundary for dfs
-    boundary.push(ttt_board)
+        # Switch turns
+        player = provided.switch_player(player)
 
-    return dfs(boundary, move, level, player)
-    #return 0, (-1, -1)
 
-def move_wrapper(board, player, trials):
+
+
+def mc_update_scores(scores, board, player):
     """
-    Wrapper to allow the use of the same infrastructure that was used
-    for Monte Carlo Tic-Tac-Toe.
+    This function takes a grid of scores (a list of lists) with the
+    same dimensions as the Tic-Tac-Toe board, a board from a completed
+    game, and which player the machine player is.
+    The function should score the completed board and update the
+    scores grid.
+    As the function updates the scores grid directly,
+    it does not return anything,
     """
-    move = mm_move(board, player)
-    move = move[1], move[0]
-    assert move[1] != (-1, -1), "returned illegal move (-1, -1)"
-    return move[1]
 
-# Test game with the console or the GUI.
-# Uncomment whichever you prefer.
-# Both should be commented out when you submit for
-# testing to save time.
+    #print 'inside mc_update_scores'
+    #print 'score board before updation - '
+    #print_score_board(scores, board)
 
-# provided.play_game(move_wrapper, 1, False)
-# poc_ttt_gui.run_gui(3, provided.PLAYERO, move_wrapper, 1, False)
+    #print 'board - '
+    #print board
+    # Get the dimension
+    dim = board.get_dim()
+
+    # Get the winner
+    winner = board.check_win()
+
+    # Score the board and update the score board accordingly
+    for row in range(dim):
+        for col in range(dim):
+            if board.square(row, col) == provided.EMPTY or winner == provided.DRAW:
+                scores[row][col] += 0
+            elif board.square(row, col) == winner:
+                scores[row][col] += SCORE_CURRENT
+            else:
+                scores[row][col] += -SCORE_OTHER
+    #print 'score board after updation - '
+    #print_score_board(scores, board)
+
+def print_score_board(scores, board):
+
+    """
+    Prints the current score board nicely
+    """
+
+    dim = board.get_dim()
+
+    rep = ""
+    for row in range(dim):
+        for col in range(dim):
+            rep += str(int(scores[row][col]))
+            if col == dim - 1:
+                rep += "\n"
+            else:
+                rep += " | "
+        if row != dim - 1:
+            rep += "-" * (4 * dim - 3)
+            rep += "\n"
+    print rep
 
 
-def test_ttt_tree():
+def get_best_move(board, scores):
+    """
+    This function takes a current board and a grid of scores.
+    The function should find all of the empty squares with the
+    maximum score and randomly return one of them as a (row, column)
+    tuple.
+    It is an error to call this function with a board that has
+    no empty squares (there is no possible next move),
+    so your function may do whatever it wants in that case.
+    The case where the board is full will not be tested.
+    """
+    print 'board - '
+    print board
+    print 'score_board - '
+    print_score_board(scores, board)
+
+    # Get the list of empty cells
+    empty_cells = board.get_empty_squares()
+
+    print 'empty cells - ',
+    print empty_cells
+
+    choices = dict()
+
+    max_score = 0
+
+    # Get the available choices of empty cells
+    # along with their points
+
+    for square in empty_cells:
+        #print square,
+        #print scores[square[0]][square[1]]
+        choices[square] = scores[square[0]][square[1]]
+
+    print 'choices - ',
+    print choices
+
+    # Select the one with the maximum points
+    try:
+        max_score = max(choices.values())
+
+        print 'max_score - ', max_score
+
+        better_choices = [key for key in choices.keys() if choices[key] == max_score]
+
+        print 'possible moves - ',
+        print better_choices
+
+        print 'best move would be - ',
+        print random.choice(better_choices)
+
+        return random.choice(better_choices)
+
+    except ValueError:
+        print 'No empty squares'
 
 
-    #my_tree = ttt_tree("a", [ttt_tree("b", [ttt_tree("c", []), ttt_tree("d", [])]),
-    #                     ttt_tree("e", [ttt_tree("f", [ttt_tree("g", [])]), ttt_tree("h", []), ttt_tree("i", [])])])
-    #print "Tree with nine nodes", my_tree
 
-    #print "The tree has", my_tree.num_nodes(), "nodes,",
-    #print my_tree.num_leaves(), "leaves and height",
-    #print my_tree.height()
+def mc_move(board, player, trials):
+    """
+    This function takes a current board, which player the machine player
+    is, and the number of trials to run.
+    The function should use the Monte Carlo simulation described above
+    to return a move for the machine player in the form of
+    a (row, column) tuple.
+    Be sure to use the other functions you have written!
+    """
+    # Get the dimension
+    dim = board.get_dim()
 
-    #import poc_draw_tree
-    #poc_draw_tree.TreeDisplay(my_tree)
+    score_board = [[0 for dummycol in range(dim)]
+                           for dummyrow in range(dim)]
 
-    #my_tree.push_child(ttt_tree("x", []))
 
-    #my_tree.push_child(ttt_tree("y", []))
-    #my_tree.push_child(ttt_tree("z", []))
+    print '---choosing best move - monte carlo simulation----'
+    for ntrials in range(trials):
+        temp_board = board.clone()
+        print
+        print 'trial - ', ntrials
+        print
+        print 'board before trial - ', ntrials
+        print temp_board
 
-    #poc_draw_tree.TreeDisplay(my_tree)
+        # Play a random game
+        mc_trial(temp_board, player)
 
-    #my_tree.pop_child()
-    #my_tree.pop_child()
+        print 'board after trial - ', ntrials
+        print temp_board
+
+        # Update the score
+        print 'score before updation - '
+        print_score_board(score_board, temp_board)
+
+        mc_update_scores(score_board, temp_board, player)
+
+        print 'score after updation - '
+        print_score_board(score_board, temp_board)
+
+    print '---simulation done----'
+    return get_best_move(board, score_board)
+
+
+def test():
+    """
+    A simple sanity test for the game
+    """
 
     dim = 3
-    board1 = provided.TTTBoard(dim, False)
-    board1.move(1, 1, provided.PLAYERX)
+    board = provided.TTTBoard(dim, False)
 
-    board2 = provided.TTTBoard(dim, False)
-    board2.move(0, 0, provided.PLAYERO)
+    print 'new board - '
+    print board
 
+    print 'playing one game...... '
+    mc_trial(board, provided.PLAYERX)
 
-    board3 = provided.TTTBoard(dim, False)
-    board3.move(2, 0, provided.PLAYERO)
+    print 'final board after the game - '
+    print board
 
-
-    tree_board1 = ttt_tree(board1, [])
-    tree_board2 = ttt_tree(board2, [])
-    tree_board3 = ttt_tree(board3, [])
-
-    #print 'board1 - '
-    #print tree_board1.print_current_board()
-
-    #print 'board2 - '
-    #print tree_board2.print_current_board()
-
-    #print 'board3 - '
-    #print tree_board3.print_current_board()
-    print
-
-    board3 = ttt_tree(board1, [])
-    #print 'main board - '
-    #print board3
-
-    # testing dfs
-
-    board4 = ttt_tree(board1, [tree_board3, tree_board2])
-    #print 'board4- '
-    #print board4
-
-    board3.push_child(tree_board2)
-    board3.push_child(tree_board3)
-
-    #print 'board3- '
-    #print board3
+    print 'winner - ', provided.STRMAP[board.check_win()]
 
 
-    #board5 = ttt_tree(board1, [board4])
-    #print 'board5- '
-    #print board5
+    score_board = [[0 for dummycol in range(dim)]
+                               for dummyrow in range(dim)]
 
+    score_board = [[2, 3, 6],[1, 0, 6],[6, 7, 9]]
 
-    #print 'testing dfs traversal for initial board-'
+    mc_update_scores(score_board, board, provided.PLAYERX)
 
-    board6 = provided.TTTBoard(dim, False)
-    #board6.move(1, 1, provided.PLAYERX)
-    board6.move(2, 0, provided.PLAYERO)
-    board6.move(0, 2, provided.PLAYERO)
-    board6.move(0, 1, provided.PLAYERX)
-    board6.move(1, 0, provided.PLAYERX)
-    board6.move(2, 1, provided.PLAYERO)
-    board6.move(0, 0, provided.PLAYERO)
-    board6.move(2, 2, provided.PLAYERX)
-    #tree_board6 = ttt_tree(board6, [])
+    print_score_board(score_board, board)
 
-    #print '----------------------'
-    #print board6
-    #print '----------------------'
-    #boundary = stack.Stack()
-
-    #boundary.push(tree_board6)
-
-    #print dfs(boundary, (-1, -1), 0, provided.PLAYERX)
-    #print mm_move(board6, provided.PLAYERO)
-
-    print move_wrapper(board6, provided.PLAYERX, 1)
-    #print
-    #print 'testing pushing and popping....'
-    #print
-    #print 'pushing board2- '
-    #board3.push_child(tree_board2)
-    #print board3
-
-    #print 'pushing board3- '
-    #board3.push_child(tree_board3)
-    #print board3
-    #print '------------------------'
-    #print 'popping a child'
-    #board3.pop_child()
-    #print board3
-
-    #print
-    #print 'testing visiting...'
-    #print
-    #print 'board3.is_visited()- ', board3.is_visited()
-    #print 'visiting board3...'
-    #board3.visit()
-    #print 'board3.is_visited()- ', board3.is_visited()
-
-    #print
-    #print 'testing scoring...'
-    #print
-    #print 'board score- ', board3.get_score()
-    #print 'scoring the board...'
-    #board3.score_board()
-    #print 'board score- ', board3.get_score()
+    get_best_move(board, score_board)
 
 
 
-#test_ttt_tree()
+#test()
+# Test game with the console or the GUI.  Uncomment whichever
+# you prefer.  Both should be commented out when you submit
+# for testing to save time.
 
-
-
-
+#provided.play_game(mc_move, NTRIALS, False)
+poc_ttt_gui.run_gui(3, provided.PLAYERX, mc_move, NTRIALS, False)
